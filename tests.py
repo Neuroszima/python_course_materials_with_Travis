@@ -2,7 +2,6 @@ import inspect
 import unittest
 import importlib
 import dis
-# import podstawy as pod
 
 
 class StudentTests(unittest.TestCase):
@@ -48,7 +47,6 @@ class StudentTests(unittest.TestCase):
 
     def test_basics(self):
         representation = inspect.getsource(self.module_list['podstawy'])
-        print(representation)
         self.assertIsNotNone(representation)
 
 
