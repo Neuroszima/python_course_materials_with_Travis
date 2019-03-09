@@ -1,4 +1,4 @@
-# python_course_materials_with_Travis
+# python_course_materials_with_Travis [![Build Status](https://travis-ci.org/Neuroszima/python_course_materials_with_Travis.png?branch=master)](https://travis-ci.org/Neuroszima/python_course_materials_with_Travis)
 
 A materials for basic cours in Python
 consists for now of 5 basic modules:
