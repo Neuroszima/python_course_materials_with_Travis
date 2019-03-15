@@ -1,0 +1,4 @@
+"""
+moduł - dekoratory
+
+"""

@@ -2,112 +2,114 @@
 Pierwszy program
 
 """
-print("hello world")
+
+if __name__ == '__main__':
+    print("hello world")
 
 
-"""
-można używać polskich znaków
-
-"""
-print("coś innego")
-
-
-"""
-każdy program ma wbudowane funkcje, tu np. możemy użyć sum(elementy)
-"""
-
-print(2 + 2)
-
-print(3.40958028)
-
-from math import pi
-
-print(pi)
-
-"""
-możemy definiować stałe w programie
-"""
-
-a = 0
-
-b = 3
+    """
+    można używać polskich znaków
+    
+    """
+    print("coś innego")
 
 
-"""
-wypisywanie wartości zmiennych w programie
-"""
-print(a)
+    """
+    każdy program ma wbudowane funkcje, tu np. możemy użyć sum(elementy)
+    """
 
-print(b)
+    print(2 + 2)
 
-"""
-możemy też je sumować
-"""
-print(a + b)
+    print(3.40958028)
 
-c = a + b
+    from math import pi
 
-print(c)
+    print(pi)
 
+    """
+    możemy definiować stałe w programie
+    """
 
-"""
-często chcemy sterować tym, jak program się wykonuje
+    a = 0
 
-Chcemy:
-
-powtórzyć pewne operacje na obiekcie X razy
-
-Zadecydować w określonych przypadkach, np. `wystąpiło X, zrób Y, a nie Z`
-
-takie rzeczy możemy zawrzeć w klauzulach sterujących
-
-        IF
-        
-        FOR
-        
-
-"""
-c = 4
-
-if c < 5:
-    print("za malo")
-else:
-    print("jest ok")
+    b = 3
 
 
-c = 7
+    """
+    wypisywanie wartości zmiennych w programie
+    """
+    print(a)
 
-if c < 5:
-    print("za malo")
-else:
-    print("jest ok")
+    print(b)
+
+    """
+    możemy też je sumować
+    """
+    print(a + b)
+
+    c = a + b
+
+    print(c)
 
 
-"""
-powtarzamy instrukcję X razy
-"""
+    """
+    często chcemy sterować tym, jak program się wykonuje
+    
+    Chcemy:
+    
+    powtórzyć pewne operacje na obiekcie X razy
+    
+    Zadecydować w określonych przypadkach, np. `wystąpiło X, zrób Y, a nie Z`
+    
+    takie rzeczy możemy zawrzeć w klauzulach sterujących
+    
+            IF
+            
+            FOR
+            
+    
+    """
+    c = 4
 
-
-loops = 5  # ilość wykonań procedury
-
-for i in range(loops):
-    print("program wykonuje pętlę :")
-    print(i, " razy ")
-
-"""
-możemy połączyć te instrukcje i zawrzeć jedną w drugiej
-
-można równierz przerwać przebieg funkcji słowem kluczowym break
-"""
-
-loops = 55  # ilość wykonań procedury
-
-c = 1
-for i in range(loops):
     if c < 5:
         print("za malo")
-        c += 1
     else:
         print("jest ok")
-        break
+
+
+    c = 7
+
+    if c < 5:
+        print("za malo")
+    else:
+        print("jest ok")
+
+
+    """
+    powtarzamy instrukcję X razy
+    """
+
+
+    loops = 5  # ilość wykonań procedury
+
+    for i in range(loops):
+        print("program wykonuje pętlę :")
+        print(i, " razy ")
+
+    """
+    możemy połączyć te instrukcje i zawrzeć jedną w drugiej
+    
+    można równierz przerwać przebieg funkcji słowem kluczowym break
+    """
+
+    loops = 55  # ilość wykonań procedury
+
+    c = 1
+    for i in range(loops):
+        if c < 5:
+            print("za malo")
+            c += 1
+        else:
+            print("jest ok")
+            break
 

@@ -1,35 +1,60 @@
 import inspect
 import unittest
 import importlib
-import dis
+import re
 # import podstawy as pod
 
 
 class StudentTests(unittest.TestCase):
 
+    BASIC_FUNCTIONS = ["hello_world_function",
+                       "hello_world_function2",
+                       "suma",
+                       "sum",
+                       "foo"]
+
+    MODULES_LIST = ["db_interaction", "OOP_metody_magiczne", "podstawy",
+                    "OOP_podstawy", "dekoratory", "zmienne", "funkcje"]
+
+    def assertHasFunction(self, function_name):
+        print(function_name, " searched")
+        # raw_string = r"^def {}".format(function_name)
+        # print(raw_string)
+        matched = re.findall(r"def ([\w]+)\(", self.module_code)
+        print(matched)
+        assert function_name in matched
+
+        # if matched is None: assert 1 == 0
+        # else: assert 0 == 0
+
     def load_modules(self, module_names):
         try:
             log = open('log.txt', "x")
         except FileExistsError:
-            log = open('log.txt', "a")
-        for each in module_names:
-            log.write(f"loading {each}... \n")
+            log = open('log.txt', "w")
+        for name in module_names:
+            log.write(f"loading {name}... \n")
             try:
-                self.module_list[each] = importlib.import_module(each)
+                self.module_list[name] = importlib.import_module(name)
             except Exception as e:
                 print(e, file=log)
-                print(f"module named {each} not present in directory \n", file=log)
-                log.close()
+                print(f"module named {name} not present in directory \n", file=log)
         log.write("finished loading modules...\n")
         log.close()
 
     def setUp(self):
         self.module_list = {}
-        self.load_modules(["db_interaction", "OOP", "podstawy", "zmienne", "funkcje"])
-        print(self.module_list)
+        self.load_modules(self.MODULES_LIST)
+        # print(self.module_list)
         for key in self.module_list:
             print(key)
-            print(self.module_list[key])
+            print(self.module_list[key].__name__)
+
+    def test_basic_functions_present(self):
+        self.module_code = inspect.getsource(self.module_list['funkcje'])
+        print(self.module_code)
+        for function_name in self.BASIC_FUNCTIONS:
+            self.assertHasFunction(function_name)
 
     def test_setUp(self):
         samplefunc = self.module_list["funkcje"].function
