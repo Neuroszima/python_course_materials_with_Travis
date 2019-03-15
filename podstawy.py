@@ -6,13 +6,11 @@ Pierwszy program
 if __name__ == '__main__':
     print("hello world")
 
-
     """
     można używać polskich znaków
     
     """
     print("coś innego")
-
 
     """
     każdy program ma wbudowane funkcje, tu np. możemy użyć sum(elementy)
@@ -33,7 +31,6 @@ if __name__ == '__main__':
     a = 0
 
     b = 3
-
 
     """
     wypisywanie wartości zmiennych w programie
@@ -76,7 +73,6 @@ if __name__ == '__main__':
     else:
         print("jest ok")
 
-
     c = 7
 
     if c < 5:
@@ -84,11 +80,9 @@ if __name__ == '__main__':
     else:
         print("jest ok")
 
-
     """
     powtarzamy instrukcję X razy
     """
-
 
     loops = 5  # ilość wykonań procedury
 

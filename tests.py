@@ -16,6 +16,15 @@ class StudentTests(unittest.TestCase):
     MODULES_LIST = ["db_interaction", "OOP_metody_magiczne", "podstawy",
                     "OOP_podstawy", "dekoratory", "zmienne", "funkcje"]
 
+    def moduleCode(self, module_name):
+        def wrapper(function):
+            def inner(*args, **kwargs):
+                result = function(*args, **kwargs)
+                return result
+            return inner
+        self.module_code = inspect.getsource(self.module_list[module_name])
+        return wrapper
+
     def assertHasFunction(self, function_name):
         print(function_name, " searched")
         # raw_string = r"^def {}".format(function_name)
@@ -50,15 +59,34 @@ class StudentTests(unittest.TestCase):
             print(key)
             print(self.module_list[key].__name__)
 
+    def test_setUp(self):
+        samplefunc = self.module_list["funkcje"].function
+        self.assertIsNotNone(samplefunc)
+
+    def test_basics(self):
+        self.module_code = inspect.getsource(self.module_list['podstawy'])
+        self.assertIsNotNone(self.module_code)
+
+    def test_basics_equations(self):
+        pass
+
+    def test_IfElse_programflow(self):
+        self.module_code = inspect.getsource(self.module_list['podstawy'])
+        ifElse_statement = re.findall(r'if ([\w <>=]+):\n([\w \(\"\)\.\n\+=<>]+)else:\n([\w \(\"\)\.\n]+)\n',
+                                      self.module_code)
+        self.assertIsNotNone(ifElse_statement)
+
+    def test_forEachIn_programflow(self):
+        self.module_code = inspect.getsource(self.module_list['podstawy'])
+        forEachIn_statement = re.findall(r'for ([\w ]+) in ([\w \[\]\(\"\)\.\n\+=<>:,]+):',
+                                         self.module_code)
+        self.assertIsNotNone(forEachIn_statement)
+
     def test_basic_functions_present(self):
         self.module_code = inspect.getsource(self.module_list['funkcje'])
         print(self.module_code)
         for function_name in self.BASIC_FUNCTIONS:
             self.assertHasFunction(function_name)
-
-    def test_setUp(self):
-        samplefunc = self.module_list["funkcje"].function
-        self.assertIsNotNone(samplefunc)
 
     def test_has_kwargs_function(self):
         kw_func = self.module_list["funkcje"].function_kwargs
@@ -66,14 +94,10 @@ class StudentTests(unittest.TestCase):
 
     def test_kwargs_working(self):
         kw_func = self.module_list["funkcje"].function_kwargs
-        self.assertIsNotNone(kw_func(20, 30, file='test.txt', something='aosioa', acnobaw=[123, 'aofh']))
-        self.assertIsNotNone(kw_func(10, 5))
         with self.assertRaises(TypeError) as e:
             result = kw_func()
-
-    def test_basics(self):
-        representation = inspect.getsource(self.module_list['podstawy'])
-        self.assertIsNotNone(representation)
+        self.assertIsNotNone(kw_func(10, 5))
+        self.assertIsNotNone(kw_func(20, 30, file='test.txt', something='aosioa', acnobaw=[123, 'aofh']))
 
 
 if __name__ == '__main__':
