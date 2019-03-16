@@ -6,15 +6,15 @@ Pierwszy program
 if __name__ == '__main__':
     print("hello world")
 
-    """
+    '''
     można używać polskich znaków
     
-    """
+    '''
     print("coś innego")
 
-    """
+    '''
     każdy program ma wbudowane funkcje, tu np. możemy użyć sum(elementy)
-    """
+    '''
 
     print(2 + 2)
 
@@ -24,32 +24,60 @@ if __name__ == '__main__':
 
     print(pi)
 
-    """
+    '''
     możemy definiować stałe w programie
-    """
+    '''
 
     a = 0
 
     b = 3
 
-    """
+    '''
     wypisywanie wartości zmiennych w programie
-    """
+    '''
     print(a)
 
     print(b)
 
-    """
+    '''
     możemy też je sumować
-    """
+    '''
     print(a + b)
 
     c = a + b
+    d = a - b
+    e = a * b
+    f = a / b
+    g = b ** a
+    # g = b / a
+
+    print("c = ", c)
+    print("d = ", d)
+    print("e = ", e)
+    print("f = ", f)
+    print("g = ", g)
+    # print("inf? : ", g)
+
+
+
+    '''
+    to nie jest tak że wszystkie typy można dodawać do siebie:
+    
+    np. bezpośrednio nie jesteśmy w stanie dodać tekstu do liczby 
+    '''
+
+    # c = 3 + "zosia"
 
     print(c)
 
+    '''
+    musimy skonwertować liczbę na tekst przy użyciu "str()"
+    '''
 
-    """
+    c = str(3) + "zosia"
+    print(c)
+
+    '''
     często chcemy sterować tym, jak program się wykonuje
     
     Chcemy:
@@ -60,12 +88,15 @@ if __name__ == '__main__':
     
     takie rzeczy możemy zawrzeć w klauzulach sterujących
     
-            IF
-            
-            FOR
-            
-    
-    """
+        if warunek:
+            instrukcje...
+        else:
+            inne instrukcje...  
+        
+        
+        FOR element in collection:
+            instrukcje...
+    '''
     c = 4
 
     if c < 5:
@@ -80,9 +111,9 @@ if __name__ == '__main__':
     else:
         print("jest ok")
 
-    """
+    '''
     powtarzamy instrukcję X razy
-    """
+    '''
 
     loops = 5  # ilość wykonań procedury
 
@@ -90,11 +121,11 @@ if __name__ == '__main__':
         print("program wykonuje pętlę :")
         print(i, " razy ")
 
-    """
+    '''
     możemy połączyć te instrukcje i zawrzeć jedną w drugiej
     
     można równierz przerwać przebieg funkcji słowem kluczowym break
-    """
+    '''
 
     loops = 55  # ilość wykonań procedury
 
