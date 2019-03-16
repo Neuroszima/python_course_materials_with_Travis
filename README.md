@@ -12,8 +12,14 @@ consists for now of 5 basic modules:
 ## functions:
   basic usage and creation of functions, including import of someones work
 
-## OOP:
-  writing classes, from simple ones to more complex
+## OOP_basics:
+  writing classes, mostly simple ones
+  
+## OOP_magic_methods:
+  how classes utilizes magic methods, or as others call them "data model" methods?
   
 ## db_interaction
   database management, with PostgreSQL database and psycopg-binary lib.
+  
+## decorators
+  how to create decorators, a feature of python
