@@ -53,7 +53,7 @@ class StudentTests(unittest.TestCase):
 
         def __call__(self, function):
             def function_wrapper(*args, **kwargs):
-                print("coducting test: ")
+                print("\ncoducting test: ")
                 print("module: ", StudentTests.MODULE_LIST[self.md_name].__name__)
                 print("test: ", function.__name__)
                 StudentTests.MODULE_CODE = inspect.getsource(StudentTests.MODULE_LIST[self.md_name])
@@ -170,6 +170,7 @@ class StudentTests(unittest.TestCase):
 
     @Module('zmienne')
     def test_withAs_file_statement(self):
+        # language=regexp
         withAs_statement_regex = r'with open\([\'\"][\w\.]+[\'\"], [\'\"]([axrw])[\'\"]\) ' \
                                  r'as [\w]+:([\w \(\"\'\)\.\n\+=<>#\!\?]+)\n'
         self.assertHasString(withAs_statement_regex, ['x', 'r', 'a', 'w'])
@@ -198,6 +199,31 @@ class StudentTests(unittest.TestCase):
             result = kw_func()
         self.assertIsNotNone(kw_func(10, 5))
         self.assertIsNotNone(kw_func(20, 30, file='test.txt', something='aosioa', acnobaw=[123, 'aofh']))
+
+    @Module('OOP_podstawy')
+    def test_oop_classes(self):
+        methods = ['__init__', '__str__', '__repr__', ]
+        bike, polynomial, hw_cls, not_hw_cls = (self.MODULE_LIST['OOP_podstawy'].Bicycle,
+                                                self.MODULE_LIST['OOP_podstawy'].Polynomial,
+                                                self.MODULE_LIST['OOP_podstawy'].HelloWorld,
+                                                self.MODULE_LIST['OOP_podstawy'].HelloWorldWithNothing)
+        assert hasattr(hw_cls, "__init__")
+        for method in methods:
+            assert hasattr(polynomial, method)
+            assert hasattr(bike, method)
+        assert hasattr(polynomial, '__len__')
+        assert hasattr(polynomial, '__add__')
+
+    @Module('OOP_podstawy')
+    def test_bicycle(self):
+        bike = self.MODULE_LIST['OOP_podstawy'].Bicycle('blue', 'mountain', gears=5, wheel_width=2,
+                                                        company="BMI hardcore burners")
+        self.assertEquals(bike.color, 'blue')
+
+    @Module('OOP_podstawy')
+    def test_bicycle(self):
+        polynomial = self.MODULE_LIST['OOP_podstawy'].Polynomial(1, 2, 3)
+        self.assertEquals("1 + 2x^1 + 3x^2", str(polynomial))
 
 
 if __name__ == '__main__':
