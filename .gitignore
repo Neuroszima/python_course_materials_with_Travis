@@ -36,7 +36,6 @@ MANIFEST
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
-log.txt
 
 # Unit test / coverage reports
 htmlcov/
@@ -105,3 +104,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# specific functions outputs
+new_file.txt
+new_file2.txt
+log.txt
