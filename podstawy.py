@@ -58,8 +58,6 @@ if __name__ == '__main__':
     print("g = ", g)
     # print("inf? : ", g)
 
-
-
     '''
     to nie jest tak że wszystkie typy można dodawać do siebie:
     
