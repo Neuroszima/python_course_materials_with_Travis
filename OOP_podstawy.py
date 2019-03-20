@@ -7,6 +7,7 @@ te i inne pytania ma za zadanie odpowiedzieć na to pytanie
 
 """
 
+
 class HelloWorldWithNothing:
     """
     do tworzenia klas używamy słowa kluczowego "class"

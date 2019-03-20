@@ -212,12 +212,170 @@ if __name__ == '__main__':
     można skorzystać tutaj z pętli for
     '''
     # a = []  # będziemy wypełniać pustą tablicę, by np. przekazać ją do innego miejsca w programie
+    pygod = 'jestem bogiem pythona'
     print(a)
     for i in range(20):
-        a.append('jestem bogiem pythona')  # każde wykonanie pętli doda do tablicy "a" tekst "jestem bogiem pythona"
+        a.append(pygod)  # każde wykonanie pętli doda do tablicy "a" tekst "jestem bogiem pythona"
 
     print(a)
     print(c)
 
+    '''
+    mamy listę z elementami, ale czy możemy się odwołać do konkretnego jej elementu? 
+    
+    No pewnie że tak, odwołujemy się do niego podając numer w kolejności w jakiej element ten występuje
+    w tablicy/liście, zaczynając od zera:
+    '''
 
+    print(c[0])
+    print(c[5])
+    print(c[10])
+    # print(c[22])  # wywali błąd
 
+    '''
+    podmiana elementów również jest możliwa, również wystarczy odnieść się do elementu o pożadanym numerze, i przyrównać
+    do niego nową wartość
+    '''
+
+    print(c[0])
+    c[0] = pygod
+    print(c[0])
+
+    a = '''
+    tekst tej pomocy zostanie przyrównany do zmiennej, jednocześnie wykonując "split"
+    
+    jest to specjalny rodzaj tworzenia tablicy z tekstu, gdzie elementami tablicy będą wyrażenia które będą rozdzielone
+    po kluczu
+    
+    np. żeby otrymać listę wyrazów z tekstu który czytasz, użyjemy jako klucza znaku " " (spacji)
+    '''.split(" ")
+    print(a)
+
+    '''
+    Jak widać tekst został rozdzielony po spacjach i otrzymaliśmy listę, a jak ją z powrotem złączyć?
+    
+    Wykorzystamy wbudowaną w string funkcję "join", działa na takiej samej zasadzie jak split, ale odwraca jego proces
+    
+    Widzimy, też pewną prawidłowość; stosujemy "split" a także będziemy stosować "join" na już zadeklarowanym łańcuchu 
+    znaków; nie musimy się martwić o to, by przyrównać go do zmiennej, już sam tekst nią jest
+    '''
+
+    print(" ".join(a))
+
+    '''
+    do tworzenia list możemy użyć jeszcze jednej przydatnej formuły, jaką jest `list comprehension`
+    
+    list comprehension pozwala na skompresowanie tworzenia listy pętlą for, umieszczając ją w deklaracji jej utworzenia
+    (pomiędzy nawiasami kwadratowymi)
+    
+    nie potrzebujemy więc używać a.append(`argument`), wystarczy użyć list comprehension
+    '''
+
+    l = [' coś ' for i in range(20)]
+    print(l)
+
+    '''
+    w pętli for możemy użyć więcej niż jednej kolekcji do iterowania po danych; używamy funkcji 
+    zip(element1, element2...), która pozwala nam zadeklarować te zmienne jako 2 listy po których mamy iterować
+    
+    pamiętajmy że muszą to być listy o tej samej długości!
+    '''
+
+    poly3 = []
+
+    polynomial1 = [1, 3, 7, 9]
+    polynomial2 = [3, 4, 7, 0]
+
+    for coeff1, coeff2 in zip(polynomial1, polynomial2):
+        poly3.append(coeff1 + coeff2)
+
+    '''
+    a w list comprehension
+    '''
+
+    poly4 = [coeff1 + coeff2 for coeff1, coeff2 in zip(polynomial2, polynomial1)]
+
+    print("poly3 = ", poly3)
+    print("poly4 = ", poly4)
+
+    '''
+    mamy również możliwość tworenia czegoś co przypominałoby wielowymiarowe tablice; jak to zrobić?
+    
+    cóż jest to po prostu tablica zawarta w tablicy
+    '''
+
+    matrix = [
+        [1, 2, 3],
+        [1, 2, 4],
+        [1, 1, 1]
+    ]
+    matrix2 = [
+        [1, 0, 2],
+        [1, 1, 0],
+        [1, 0, 6]
+    ]
+
+    '''
+    dostaliśmy 2 macierze 3x3 z odpowiednio wstawionymi parametrami
+    
+    mnożenie macierzy przy użyciu gwiazdki powoduje mnożenie "element po elemencie"
+    
+    mnożenie przy użyciu "@" oznacza właściwe mnożenie macierzowe, znane z akademickiego kursu matematyki
+    '''
+    import numpy as np
+
+    matrix2 = np.array(matrix2)
+    matrix = np.array(matrix)
+
+    matrix3 = matrix * matrix2
+    matrix4 = matrix @ matrix2
+    matrix5 = matrix2 @ matrix
+
+    print(matrix3, "\n\n", matrix4, "\n\n", matrix5)
+
+    '''
+    powiedzmy sobie teraz o słownikach, słowniki również zapisują wiele danych w sobie, tak samo jak lista
+    
+    odmiennie od list zapis w słownikach realizuje się jako zapis w stylu klucz=wartość
+    '''
+
+    # b = {}  # deklaracja słownika
+
+    b['klucz'] = 'wartość'
+    b['s2'] = 2
+
+    '''
+    jak widać kluczem jest zawsze string, wartością może być wszystko, łącznie z innym słownikiem
+    
+    odwołanie się do wartości przebiega analogicznie
+    '''
+    print(b['klucz'])
+    print('s2 : ', b['s2'])
+
+    print(b)
+    '''
+    jeżeli chcielibyśmy zainicjować słownik z jakimiś wartościami na starcie, wpisujemy je również jako pary
+    klucz wartość, ale w określony sposób; definiuje się je jako:
+        `"key" : value`
+    
+    a więc wartości następują po dwukropku
+    '''
+    value = 3.14
+
+    d = {'a' : 3,
+         'another dict' : {
+             'key': value
+         },
+         'something': 'else'}
+
+    '''
+    w pętli for możemy odwołać się zarówno do kluczy jak i wartości
+    '''
+
+    for key, value in d:
+        print(key, ' ',  value)
+
+    '''
+    warto zaznaczyć że słowniki są wykorzystywane we frameworku Django; przekazuje się w nich tzw. kontekst, który
+    będzie następnie wyświetlany na stronie
+    '''
