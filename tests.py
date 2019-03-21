@@ -195,14 +195,20 @@ class StudentTests(unittest.TestCase):
         # language=regexp
         dicts_regex = [r'\{\}',
                        r'(?P<pair>([\'\"][\w ]+[\'\"] : [\{\}\w\s\n\'\"\:. żźćśęąółń]+(?P<suffix>,\n|\}\n)))',
-                       r'[\w]+ = dict\([\w]+, [\w]+\)',
                        r'[\w]+\[[\'\"][\w\s]+[\'\"]\] = [\w\s\'\".,ąśćźżęółń\[\]*\-+><=]+\n',
                        r'[\w]+ = \{[\w\s\'\"{} :,.]+\}\n']
         for regex in dicts_regex:
+            print(regex)
             self.assertHasString(regex)
         # language=regexp
-        sample_dict = re.findall(r'[\w]+ = dict\((?P<arguments>[\w\s\n\'\".,ąśćźżęółń\[\]*\-+><=])\)', self.MODULE_CODE)
-        arguments = re.findall(r'(([\w]+=[\w\'\[\]\n(),]+|[\[][\w\n\'\"()ąśćźżęóńł ,]+[\]],)(, |,\n|\n))')
+        sample_dict = re.findall(r'[\w]+ = dict\((?P<insides>(?:[\w\n ]+=[\w\'\"\s().,]+,\n)+(?:[\w\n ]+=[\w\'\"\s().,]+))\)',
+            self.MODULE_CODE)
+        print('sample dict: ', sample_dict)
+        arguments = re.findall(
+            r'(([\w]+=[\w\'\[\]\n(),]+|[\[][\w\n\'\"()ąśćźżęóńł ,]+[\]],)(, |,\n|\n))',
+            sample_dict[0])
+        print(arguments)
+        self.assertIsNotNone(arguments)
 
     @Module('zmienne')
     def test_listcomp(self):
