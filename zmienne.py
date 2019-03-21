@@ -221,6 +221,12 @@ if __name__ == '__main__':
     print(c)
 
     '''
+    można też utworzyć listę korzystając z wbudowanej funkcji
+    '''
+
+    list_1 = list((1, 2, 3, 4, 5))
+
+    '''
     mamy listę z elementami, ale czy możemy się odwołać do konkretnego jej elementu? 
     
     No pewnie że tak, odwołujemy się do niego podając numer w kolejności w jakiej element ten występuje
@@ -334,7 +340,32 @@ if __name__ == '__main__':
     print(matrix3, "\n\n", matrix4, "\n\n", matrix5)
 
     '''
-    powiedzmy sobie teraz o słownikach, słowniki również zapisują wiele danych w sobie, tak samo jak lista
+    innym bardzo podobnym typem danych do list są tak zwane tuple. Czym one się różnią?
+    
+    Przede wszystkim tym, że nie można ich modyfikować, zmieniać ich rozmiarów ani podstawiać danych
+    
+    Przydaje się to szczególnie gdy wyjmujemy wrażliwe dane z bazy, nie jesteśmy w stanie ich zmodyfikować, ani żadne 
+    funkcje w programie
+    '''
+
+    tup = 1, 2, 3, 4, 5, 6
+    print(tup)
+
+    tup2 = 2,
+    print(tup2)
+
+    '''
+    o powstaniu tupli decyduje nie nawias okrągły, ale przecinek, widać to wyżej,
+    
+    poza tym nie różnią się za wiele od list, jedyną różnicą jest to, że używając analogicznej metody tworzenia tupli 
+    jak w listach (list comprehension), W wyniku tego tworzy się tzw. wyrażenie generatorowe 
+    '''
+
+    generator = (i*2 for i in range(20))
+
+    '''
+    o generatorach powiemy sobie później, jak narazie powiedzmy sobie teraz o słownikach, słowniki również zapisują 
+    wiele danych w sobie, tak samo jak lista, czy tupla
     
     odmiennie od list zapis w słownikach realizuje się jako zapis w stylu klucz=wartość
     '''
@@ -343,6 +374,25 @@ if __name__ == '__main__':
 
     b['klucz'] = 'wartość'
     b['s2'] = 2
+
+    '''
+    możemy też zadeklarować listy używając wbudowanej funkcji "dict(wartośći...)"
+    '''
+
+    dict_1 = dict(
+        wrd=15,
+        wrc=25,
+        hamburger='cheeseburger',
+        some_complicated_list=range(1,100)
+    )
+    cust_dict = dict(
+        [
+            ('f', 2),
+            ('a', 3),
+            ('x', 6)
+        ],
+        bambo=3
+    )
 
     '''
     jak widać kluczem jest zawsze string, wartością może być wszystko, łącznie z innym słownikiem

@@ -177,9 +177,40 @@ class StudentTests(unittest.TestCase):
 
     @Module('zmienne')
     def test_tryExcept_statement(self):
+        # language=regexp
         tryExcept_statement_regex = r"try:\n[\w\(\)\'\"\s+><=.,:\?\!]+(?<=except )[\w]+Error:" \
                                     r"\n[\w\(\)\'\"\s+><=.,:\?\!]+(?<=\n\n)"
         self.assertHasString(tryExcept_statement_regex)
+
+    @Module('zmienne')
+    def test_lists(self):
+        # language=regexp
+        lists_regex = [
+            r'\[(?<=\[)(?P<insides>(?:[\w\s\n\(\)\'\"\+., ]+, )+[\n\(\)\w\s\'\"\+. ]+)\]',
+            r''
+        ]
+
+    @Module('zmienne')
+    def test_dicts(self):
+        # language=regexp
+        dicts_regex = [r'\{\}',
+                       r'(?P<pair>([\'\"][\w ]+[\'\"] : [\{\}\w\s\n\'\"\:. żźćśęąółń]+(?P<suffix>,\n|\}\n)))',
+                       r'[\w]+ = dict\([\w]+, [\w]+\)',
+                       r'[\w]+\[[\'\"][\w\s]+[\'\"]\] = [\w\s\'\".,ąśćźżęółń\[\]*\-+><=]+\n',
+                       r'[\w]+ = \{[\w\s\'\"{} :,.]+\}\n']
+        for regex in dicts_regex:
+            self.assertHasString(regex)
+        # language=regexp
+        sample_dict = re.findall(r'[\w]+ = dict\((?P<arguments>[\w\s\n\'\".,ąśćźżęółń\[\]*\-+><=])\)', self.MODULE_CODE)
+        arguments = re.findall(r'(([\w]+=[\w\'\[\]\n(),]+|[\[][\w\n\'\"()ąśćźżęóńł ,]+[\]],)(, |,\n|\n))')
+
+    @Module('zmienne')
+    def test_listcomp(self):
+        # language=regexp
+        listComp_regex = [r'\[([\w\' śćżźęąłó()]+) for [\w]+ in [\w\s)(]+\]',
+                          r'\[([\w*\-\/\\+=><)(. ]+) for [\w\s,.()]+ in zip\([\w, ]+\)\]']
+        for regex in listComp_regex:
+            self.assertHasString(regex)
 
     @Module('funkcje')
     def test_basic_functions_present(self):
@@ -207,12 +238,13 @@ class StudentTests(unittest.TestCase):
                                                 self.MODULE_LIST['OOP_podstawy'].Polynomial,
                                                 self.MODULE_LIST['OOP_podstawy'].HelloWorld,
                                                 self.MODULE_LIST['OOP_podstawy'].HelloWorldWithNothing)
-        assert hasattr(hw_cls, "__init__")
+        ast_msg = '{} not implemented in {} class!'
+        assert hasattr(hw_cls, "__init__"), ast_msg.format("__init__", hw_cls.__name__)
         for method in methods:
-            assert hasattr(polynomial, method)
-            assert hasattr(bike, method)
-        assert hasattr(polynomial, '__len__')
-        assert hasattr(polynomial, '__add__')
+            assert hasattr(polynomial, method), ast_msg.format(method, polynomial.__name__)
+            assert hasattr(bike, method), ast_msg.format(method, bike.__name__)
+        assert hasattr(polynomial, '__len__'), ast_msg.format("__init__", polynomial.__name__)
+        assert hasattr(polynomial, '__add__'), ast_msg.format("__init__", polynomial.__name__)
 
     @Module('OOP_podstawy')
     def test_bicycle(self):
