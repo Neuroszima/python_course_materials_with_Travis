@@ -6,6 +6,7 @@ czym jest klasa, czym jest metoda? Co to jest obiekt i jak ma się on do klasy?
 te i inne pytania ma za zadanie odpowiedzieć na to pytanie
 
 """
+from typing import Union
 
 
 class HelloWorldWithNothing:
@@ -83,7 +84,7 @@ class Bicycle:
 
     """
 
-    def __init__(self, color, type, gears=5, wheel_width=2, company="Bicycle Industries"):
+    def __init__(self, color, bike_type, gears=5, wheel_width=2, company="Bicycle Industries"):
         """
         Można do tego podejść inaczej, ja lubię na to spojrzeć również z następującej perspektywy:
             Zadaję sobie pytanie:
@@ -135,7 +136,7 @@ class Bicycle:
         """
         self.company = company
         self.color = color
-        self.type = type
+        self.bike_type = bike_type
         self.gears = gears
         self.wheel_width = wheel_width
 
@@ -156,7 +157,7 @@ class Bicycle:
         :return: reprezentacja tekstowa roweru
         """
         info = f"""To jest rower:
-            typ: {self.type}
+            typ: {self.bike_type}
             kolor: {self.color}
             firma: {self.company}
             liczba przerzutek: {self.gears}
@@ -167,7 +168,6 @@ class Bicycle:
     def __repr__(self):
         return str(self)
 
-
     '''
     no dobrze mamy obiekt, ale jak odczytać to co on przedstawia?
     
@@ -176,21 +176,6 @@ class Bicycle:
         
     w myśl tego, żadna zmienna nie powinna być wczytywana bezpośrednio w programie, ale za pośrednictwem tych metod
     '''
-
-    def get_color(self):
-        return self.color
-
-    def get_type(self):
-        return self.type
-
-    def get_gears(self):
-        return self.gears
-
-    def get_wheel_type(self):
-        return self.wheel_width
-
-    def get_company(self):
-        return self.company
 
 
 class HelloWorld:
@@ -244,6 +229,23 @@ class Polynomial(object):
     def __str__(self):
         """
         przedstaw TEN obiekt jako łańcuch znaków
+
+        mogłoby się wydawać, że nie jest potrzebne, ani tym bardziej przydatne, tworzenie osobnych metod __repr__ oraz
+        __str__. I w sumie w powyższym przypadku tak może faktycznie się wydawać
+
+        Jest jednak mała, acz istotna różnica w przypadku obu metod klasowych, podczas gdy __str__ ma za zadanie
+        przedstawić ten obiekt w jak najbardziej czytelnej formie użytkownikowi, __repr__ jest używany głównie do
+        debugowania kodu
+
+        Innymi słowy można by określić to następująco:
+            __repr__ -> ma za zadanie przedstawić obiekt JEDNOZNACZNIE
+            __str__  -> ma za zadanie przedstawić obiekt CZYTELNIE
+
+        źródło: https://www.geeksforgeeks.org/str-vs-repr-in-python/
+
+        w niniejszym przykładzie nie będziemy komplikowali tej metody, i w obu przypadkach zwrócimy tę samą
+        reprezentację tekstową danego obiektu
+
         :return: obiekt "str()" wielomianu
         """
         info = [f" + {self.coefficients[i]}x^{i}" for i in range(1, len(self))]
@@ -280,12 +282,119 @@ class Polynomial(object):
         return Polynomial(*[coeff_self + coeff_other for coeff_self, coeff_other in zip(new_scf, new_ocf)])
 
 
+class Vegetable:
+    """
+    Tworzymy klasę Vegetable aby poruszyć kolejny aspekt programowania obiektowego: gettery i settery
+
+    po co się je stosuje? programuje się w nich podstawowe zachowanie przy nadawaniu wartości zmiennym naszych tworzonych
+    obiektów oraz przy ich wywoływaniu
+
+    Omówimy to na prostym przykładzie, nasze warzywo będzie miało dwie, mówimy, `własności`:
+        kolor
+        masę
+    nadamy warzywu te własności, najpierw przypisując je jako zwyczajne zmienne w medodzie __init__, a następnie tworząc
+    odrębną metodę do ustawiania tych zmiennych, nazywając je tymi samymi nazwami co zmienne im odpowiadające, oraz
+    zawijając ich w dekorator @property
+    """
+
+    def __init__(self, mass, color):
+        """
+        w tym punkcie nic się nie zmienia; dalej mówimy o tworzeniu obiektów, przy użyciu pewnej "receptury"
+
+        :param mass: masa warzywa
+        :param color: kolor warzywa
+        """
+        self._color = color
+        self._mass = mass
+
+    def __str__(self):
+        """
+        :return: reprezentacja tekstowa obiektu
+        """
+        return f'this vegetable weights {self.mass} and has {self.color} color'
+
+    def __repr__(self):
+        """
+        :return: standardowa reprezentacja obiektu
+        """
+        return f"""{self.__class__.__name__} object
+                    id: {id(self)}
+                    text: {str(self)}"""
+
+    @property
+    def color(self):
+        """
+        w tym momencie pojawia się nowa koncepcja, tzw. property
+
+        "property" umożliwia opisanie zasad, zgodnie z którymi dana wartość będzie nadawana
+
+        funkcja udekorowana @property zachowuje się tak samo jak getter, czyli zwraca pożądaną wartość, ale jednocześnie
+        pozwala na dodanie dodatkowego zachoania, u nas będzie to zwykłe wyświetlenie "inside property" w konsoli
+        :return: self.__color
+        """
+        print("inside property")
+        return self._color
+
+    @color.setter
+    def color(self, value: str):
+        """
+        oprócz gettera najistotniejszą funkcją jest tzw. setter, czyli funkcja która ustawia wartość danego parametru,
+        czy to z zewnątrz klasy jak i wewnątrz. Sposób zapisu jest następstwem udekorowania poprzedniej funkcji
+        dekoratorem "@property" - stosujemy nazwę funkcji udekorowanej przy pomocy @property, oraz po kropce dając
+        słówko setter
+
+        od tej pory każda operacja przypisania wartości do tej własności, skutkować będzie wywołaniem obecnego w naszej
+        metodzie kodu; w tym wypadku sprawdzamy czy wartość jest poprawnie wpisywana, lub czy obiekt nie jest tworzony z
+        czymś innym zamiast tekstu przy zmiennej "color"
+
+        :param value: u nas - ciąg znaków reprezentujący kolor
+        :return: wyjątek gdy wejściowa wartość nie jest tekstem
+        """
+        print(value, type(value))
+        print(f'inside color setter')
+        if isinstance(value, str):
+            self._color = value
+        else:
+            raise TypeError('value has to be string!')
+
+    @property
+    def mass(self):
+        """
+        kolejna własność obiektu "Vegetable" - masa
+
+        nic dodać nic ująć
+        :return: self.__mass
+        """
+        return self._mass
+
+    @mass.setter
+    def mass(self, value: Union[int, float]):
+        """
+        ... oraz jej setter
+
+        jak widzimy w tym setterze, aby dać wskazówkę użytkownikowi, podajemy typy zmiennej które mogą być bez przeszkód
+        przekazane i zapisane jako wartość zmiennej `mass`
+
+        odmiennie do koloru, który mógł jedynie byś zaprezentowany jako tekstowa wartość (np. 'niebieski'), masa może
+        być zarówno ułamkiem jak i liczbą całkowitą
+
+        gdy mamy do czynienia z potrzebą przekazania wielu "typów" (nie "obiektów" w sensie poszczególnych przedmiotów,
+        a samych definicji klas do których należą) używamy typu Union, importowanego z modułu "typing"
+
+        :param value: dowolna liczba typu int lub float
+        :return: wyjątek gdy wejściowa wartość nie jest typu float
+        """
+        print(f'inside mass setter')
+        if isinstance(value, (int, float)):
+            self._mass = value
+        else:
+            raise TypeError('value has to be float or int!')
+
+
 if __name__ == '__main__':
     bike = Bicycle("blue", "mountain", 6)
     print(bike)
-    print(bike.get_color())
     print(bike.color)
-    print(bike.get_gears())
     polynom = Polynomial(1, 2, 3, 4, 5)
     polynom2 = Polynomial(3, 5)
     print(polynom)
@@ -296,4 +405,13 @@ if __name__ == '__main__':
     polynom = Polynomial(1, 2, 3, 4, 5)
     poly4 = polynom + polynom2
     assert str(poly3) == str(poly4)
+    print(Vegetable(20, 'blue'))
+    vege = Vegetable(94, 'red')
+    print(repr(vege))
+    print(vege.mass)
+    print(vege.color)
+    vege.color = "yellow"
+    print(vege.color)
+    vege.mass = 29
+    print(vege)
 
