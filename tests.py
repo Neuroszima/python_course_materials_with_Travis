@@ -1,9 +1,8 @@
 import inspect
-import os
 import unittest
 import importlib
 import re
-from platform import system
+import dis
 
 
 class StudentTests(unittest.TestCase):
@@ -237,18 +236,27 @@ class StudentTests(unittest.TestCase):
         self.assertIsNotNone(kw_func(10, 5))
         self.assertIsNotNone(kw_func(20, 30, file='test.txt', something='aosioa', acnobaw=[123, 'aofh']))
 
+    @Module('funkcje')
+    def test_void_function(self):
+        hw, hw2 = (self.MODULE_LIST["funkcje"].hello_world_function,
+                   self.MODULE_LIST["funkcje"].hello_world_function2)
+        void = self.MODULE_LIST["funkcje"].hello_world_function2()
+        non_void = self.MODULE_LIST["funkcje"].hello_world_function()
+
     @Module('OOP_podstawy')
     def test_oop_classes(self):
         methods = ['__init__', '__str__', '__repr__', ]
-        bike, polynomial, hw_cls, not_hw_cls = (self.MODULE_LIST['OOP_podstawy'].Bicycle,
+        bike, polynomial, hw_cls, not_hw_cls, vege = (self.MODULE_LIST['OOP_podstawy'].Bicycle,
                                                 self.MODULE_LIST['OOP_podstawy'].Polynomial,
                                                 self.MODULE_LIST['OOP_podstawy'].HelloWorld,
-                                                self.MODULE_LIST['OOP_podstawy'].HelloWorldWithNothing)
+                                                self.MODULE_LIST['OOP_podstawy'].HelloWorldWithNothing,
+                                                self.MODULE_LIST['OOP_podstawy'].Vegetable)
         ast_msg = '{} not implemented in {} class!'
         assert hasattr(hw_cls, "__init__"), ast_msg.format("__init__", hw_cls.__name__)
         for method in methods:
             assert hasattr(polynomial, method), ast_msg.format(method, polynomial.__name__)
             assert hasattr(bike, method), ast_msg.format(method, bike.__name__)
+            assert hasattr(vege, method), ast_msg.format(method, vege.__name__)
         assert hasattr(polynomial, '__len__'), ast_msg.format("__init__", polynomial.__name__)
         assert hasattr(polynomial, '__add__'), ast_msg.format("__init__", polynomial.__name__)
 
@@ -259,9 +267,36 @@ class StudentTests(unittest.TestCase):
         self.assertEquals(bike.color, 'blue')
 
     @Module('OOP_podstawy')
-    def test_bicycle(self):
+    def test_polynomial(self):
         polynomial = self.MODULE_LIST['OOP_podstawy'].Polynomial(1, 2, 3)
         self.assertEquals("1 + 2x^1 + 3x^2", str(polynomial))
+
+    @Module('OOP_podstawy')
+    def test_property(self):
+        vegetable = self.MODULE_LIST['OOP_podstawy'].Vegetable(40, 'blue')
+        self.assertEquals(vegetable.color, 'blue')
+        self.assertEquals(vegetable.mass, 40)
+        property_color = self.MODULE_LIST['OOP_podstawy'].Vegetable.color
+        property_mass = self.MODULE_LIST['OOP_podstawy'].Vegetable.mass
+        self.assertEquals(type(property_mass), property)
+        self.assertEquals(type(property_color), property)
+        assert 'coefficients' not in [x[0] for x in inspect.classify_class_attrs(self.MODULE_LIST['OOP_podstawy'].Polynomial)]
+
+    @Module('OOP_podstawy')
+    def test_property_mention(self):
+        # language=regexp
+        property_regex = [r'@property\n[\s]+def (?P<name>[\w]+)\(self\):',
+                          r'@(?P<name2>[\w]+)\.setter\n[\s]+def (?P<name3>[\w]+)\(self, [\w\s:\[\],.]+\):']
+        matches = []
+        for regex in property_regex:
+            matches.append(re.findall(regex, self.MODULE_CODE))
+        print(matches)
+        self.assertIsNotNone(matches[0])
+        self.assertIsNotNone(matches[1])
+        for i in range(0, len(matches[0])-1):
+            varname = matches[0][i]
+            for property_name in matches[1][i]:
+                self.assertEquals(varname, property_name)
 
 
 if __name__ == '__main__':

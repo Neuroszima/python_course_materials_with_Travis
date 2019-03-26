@@ -168,15 +168,6 @@ class Bicycle:
     def __repr__(self):
         return str(self)
 
-    '''
-    no dobrze mamy obiekt, ale jak odczytać to co on przedstawia?
-    
-    w tym celu wymyślono pewien sposób zapisu; utworzono tak zwane metody pobierające i ustawiające
-        (gettery i settery)
-        
-    w myśl tego, żadna zmienna nie powinna być wczytywana bezpośrednio w programie, ale za pośrednictwem tych metod
-    '''
-
 
 class HelloWorld:
     """
@@ -414,4 +405,6 @@ if __name__ == '__main__':
     print(vege.color)
     vege.mass = 29
     print(vege)
-
+    something = Vegetable.color
+    print(something)
+    assert type(something) == property
