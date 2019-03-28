@@ -4,12 +4,12 @@ from unittest import TestCase, main
 import re
 
 
-
 class SimpleTest(TestCase):
 
     MODULES_TO_IMPORT = [
         'podstawy',
-        'zmienne'
+        'zmienne',
+        'OOP_metody_magiczne_i_dziedziczenie'
     ]
 
     MODULE_CODE = None
@@ -30,6 +30,26 @@ class SimpleTest(TestCase):
 
             print("in : __call__")
             return function_wrapper
+
+    def assertHasClass(self, cls_name, inheritances: list=None):
+        match = re.finditer(r'class (?P<classname>[\w]+)(?P<inherited>\((?:[\w]+, )*[\w]+\))?:\n', self.MODULE_CODE)
+        # print(string)
+        match_list = {k: v for k, v in [(x.group('classname'), x.group('inherited')) for x in match]}
+        if inheritances is not None:
+            for classname in inheritances:
+                self.assertIsNotNone(re.search(classname, match_list[cls_name]),
+                                     msg=f"{classname} not implemented in python materials")
+        # Historical code - DON'T DO COPY PASTES BLINDLY
+        # found = False
+        # strings = re.findall(cls_name, self.MODULE_CODE)
+        # # print(strings)
+        # for class_name in inheritances:
+        #     for catched_group in strings:
+        #         if class_name in catched_group:
+        #             found = True
+        #             print("inherited ", class_name)
+        #     assert found, f"{class_name} not implemented in python materials"
+        #     found = False
 
     def setUp(self):
         for md_name in SimpleTest.MODULES_TO_IMPORT:
@@ -66,13 +86,35 @@ class SimpleTest(TestCase):
         test for custom assertion function and it's modification
         :return:
         """
+        # language=regexp
         equations = r"([\w]+) = ([\w\. ]+) ([\+\-\*\/]{1,2}) ([\w\. ]+)"
         self.assertHasString(equations, ['+', '-', '*', '/', '**'])
 
     @codeExtractor('zmienne')
     def test_withAs_file_statement(self):
+        # language=regexp
         withAs_statement_regex = r'with open\([\'\"][\w\.]+[\'\"], [\'\"]([axrw])[\'\"]\) as [\w]+:'
         self.assertHasString(withAs_statement_regex, ['x', 'r', 'a', 'w'])
+
+    @codeExtractor('OOP_metody_magiczne_i_dziedziczenie')
+    def test_named_group_regex(self):
+        # language=regexp
+        cls_regex = r'class (?P<classname>[\w]+)(?P<inherited>\((?:[\w]+, )*[\w]+\))?:\n'
+        something = re.finditer(cls_regex, self.MODULE_CODE)
+        # calling results from named groups does not work with re.findall()
+        # you have to use re.finditer() to be able to call them like that
+        for match in something:
+            print(match.group('classname'))
+            print(match.group('inherited'))
+
+    @codeExtractor('OOP_metody_magiczne_i_dziedziczenie')
+    def test_inheritace_classes(self):
+        self.assertHasClass('Vegetable', ['Plant'])
+        super()
+        # self.assertHasClass('Plant')
+        # self.assertHasClass('T34', ['Tank'])
+        # self.assertHasClass('Tank', ['Battleunit', 'Vehicle'])
+
 
 if __name__ == '__main__':
     main()

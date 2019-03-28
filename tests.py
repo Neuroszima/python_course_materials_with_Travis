@@ -1,3 +1,4 @@
+import ast
 import inspect
 import unittest
 import importlib
@@ -23,13 +24,7 @@ class StudentTests(unittest.TestCase):
 
     """
 
-    BASIC_FUNCTIONS = ["hello_world_function",
-                       "hello_world_function2",
-                       "suma",
-                       "sum",
-                       "foo"]
-
-    MODULES_TO_LOAD = ["db_interaction", "OOP_metody_magiczne", "podstawy",
+    MODULES_TO_LOAD = ["db_interaction", "OOP_dziedziczenie_i_wiecej", "podstawy",
                        "OOP_podstawy", "dekoratory", "zmienne", "funkcje"]
 
     MODULE_CODE = None
@@ -83,20 +78,16 @@ class StudentTests(unittest.TestCase):
         log.close()
 
     def assertHasFunction(self, function_name):
-        # raw_string = r"^def {}".format(function_name)
-        # print(raw_string)
         matched = re.findall(r"def ([\w]+)\(", self.MODULE_CODE)
         # print(matched)
         assert function_name in matched
         print(function_name, " found")
 
-        # if matched is None: assert 1 == 0
-        # else: assert 0 == 0
-
-    def assertHasString(self, regex, cases=None):
+    def assertHasString(self, regex, cases: list=None):
         string = re.search(regex, self.MODULE_CODE)
         # print(string)
-        self.assertIsNotNone(string, msg="no match for current regex")
+        self.assertIsNotNone(string, msg="no match for current regex:\n"
+                                         "{}".format(regex))
         if cases is not None:
             found = False
             strings = re.findall(regex, self.MODULE_CODE)
@@ -108,6 +99,18 @@ class StudentTests(unittest.TestCase):
                         print("found ", case)
                 assert found, f"{case} not mentioned in python materials"
                 found = False
+
+    def assertHasClass(self, cls_name, inheritances: list=None):
+        match = re.finditer(r'class (?P<classname>[\w]+)(?P<inherited>\((?:[\w]+, )*[\w]+\))?:\n', self.MODULE_CODE)
+        # print(string)
+        match_list = {k: v for k, v in
+                      [(x.group('classname'), x.group('inherited')) for x in match]}
+        #             ^ <- the list starting above the "^" character works similarly to what zip(list1, list2) does
+        # https://stackoverflow.com/questions/209840/convert-two-lists-into-a-dictionary-in-python
+        if inheritances is not None:
+            for classname in inheritances:
+                self.assertIsNotNone(re.search(classname, match_list[cls_name]),
+                                     msg=f"{classname} not implemented in python materials")
 
     def setUp(self):
         print('setUp() ...')
@@ -127,6 +130,7 @@ class StudentTests(unittest.TestCase):
 
     @Module('podstawy')
     def test_basics_equations(self):
+        # language=regexp
         equations = r"([\w]+) = ([\w\. ]+) ([\+\-\*\/]{1,2}) ([\w\. ]+)"
         self.assertHasString(equations, ['+', '-', '*', '/', '**'])
 
@@ -144,6 +148,7 @@ class StudentTests(unittest.TestCase):
 
     @Module('zmienne')
     def test_basic_functions(self):
+        # language=regexp
         basic_functions = [
             # usages of "input" function
             r"input([\w\(\'\"\:\+ ,ążźćęśłóń]{3,}\))",
@@ -164,8 +169,9 @@ class StudentTests(unittest.TestCase):
 
     @Module('zmienne')
     def test_variable_types(self):
+        # language=regexp
         variable_types_regex = r"[\n \(]((int)|(float)|(str))\([\w\(\)\'\" :]+\)"
-        self.assertHasString(variable_types_regex)
+        self.assertHasString(variable_types_regex, ['int', 'float', 'str'])
 
     @Module('zmienne')
     def test_withAs_file_statement(self):
@@ -185,9 +191,30 @@ class StudentTests(unittest.TestCase):
     def test_lists(self):
         # language=regexp
         lists_regex = [
+            r'[\w]+ = \[\]',
+            r'[\w]+ = list\(\)',
             r'\[(?<=\[)(?P<insides>(?:[\w\s\n\(\)\'\"\+., ]+, )+[\n\(\)\w\s\'\"\+. ]+)\]',
-            r''
         ]
+        for regex in lists_regex:
+            self.assertHasString(regex)
+        # language=regexp
+        multiargument_list_regex = r'\[(?<=\[)(?P<insides>(?:[\w\s\n\(\)\'\"\+., ]+, )+[\n\(\)\w\s\'\"\+. ]+)\]'
+        insides = [x.group('insides') for x in re.finditer(multiargument_list_regex, self.MODULE_CODE)]
+        results = [re.findall(r'([\w.\'\"\s]+), ', string) for string in insides]
+        # # print(results)
+        # testing = results[0]
+        # # print(testing)
+        # for value in testing:
+        #     print(type(ast.literal_eval(value)))
+        for var_type in [bool, int, str, float]:
+            match = False
+            for single_list_contents in results:
+                if match: break
+                for element in single_list_contents:
+                    if isinstance(ast.literal_eval(element), var_type): match = True
+                    if match: break
+            assert match, f"{var_type} not show as usable in lists!"
+
 
     @Module('zmienne')
     def test_dicts(self):
@@ -200,7 +227,8 @@ class StudentTests(unittest.TestCase):
             print(regex)
             self.assertHasString(regex)
         # language=regexp
-        sample_dict = re.findall(r'[\w]+ = dict\((?P<insides>(?:[\w\n ]+=[\w\'\"\s().,]+,\n)+(?:[\w\n ]+=[\w\'\"\s().,]+))\)',
+        sample_dict = re.findall(
+            r'[\w]+ = dict\((?P<insides>(?:[\w\n ]+=[\w\'\"\s().,]+,\n)+(?:[\w\n ]+=[\w\'\"\s().,]+))\)',
             self.MODULE_CODE)
         print('sample dict: ', sample_dict)
         arguments = re.findall(
@@ -217,11 +245,40 @@ class StudentTests(unittest.TestCase):
         for regex in listComp_regex:
             self.assertHasString(regex)
 
+    @Module('zmienne')
+    def test_tuple(self):
+        # language=regexp
+        tuple_regex = [r'= tuple\(([^\n)]*)\)\n',
+                       r'= (([\w]+), )*[\w]+\n',
+                       r'[\w]+ = [\w]+,[\s]?\n']
+        for regex in tuple_regex:
+            self.assertHasString(regex)
+
     @Module('funkcje')
     def test_basic_functions_present(self):
         # print(self.MODULE_CODE)
-        for function_name in self.BASIC_FUNCTIONS:
+        basic_functions = ["hello_world_function",
+                           "hello_world_function2",
+                           "suma",
+                           "sum",
+                           "foo"]
+        for function_name in basic_functions:
             self.assertHasFunction(function_name)
+
+    @Module('funkcje')
+    def test_void_function(self):
+        hw, hw2 = (self.MODULE_LIST["funkcje"].hello_world_function,
+                   self.MODULE_LIST["funkcje"].hello_world_function2)
+        hw_as_text = inspect.getsource(hw)
+        hw2_as_text = inspect.getsource(hw2)
+        print(hw_as_text, '\n', hw2_as_text)
+        self.assertIsNotNone(re.findall(r'return [\"\']hello world from function[\"\']', hw_as_text)[0])
+        self.assertEqual(re.findall(r'return ', hw2_as_text), [])
+        self.assertIsNotNone(re.findall(r'print\([\"\']hello world from function[\"\']\)', hw2_as_text)[0])
+        void = self.MODULE_LIST["funkcje"].hello_world_function2()
+        non_void = self.MODULE_LIST["funkcje"].hello_world_function()
+        self.assertIsNone(void)
+        self.assertIsNotNone(non_void)
 
     @Module('funkcje')
     def test_has_kwargs_function(self):
@@ -237,20 +294,19 @@ class StudentTests(unittest.TestCase):
         self.assertIsNotNone(kw_func(20, 30, file='test.txt', something='aosioa', acnobaw=[123, 'aofh']))
 
     @Module('funkcje')
-    def test_void_function(self):
-        hw, hw2 = (self.MODULE_LIST["funkcje"].hello_world_function,
-                   self.MODULE_LIST["funkcje"].hello_world_function2)
-        void = self.MODULE_LIST["funkcje"].hello_world_function2()
-        non_void = self.MODULE_LIST["funkcje"].hello_world_function()
+    def test_selfreference(self):
+        pass
 
     @Module('OOP_podstawy')
     def test_oop_classes(self):
         methods = ['__init__', '__str__', '__repr__', ]
-        bike, polynomial, hw_cls, not_hw_cls, vege = (self.MODULE_LIST['OOP_podstawy'].Bicycle,
-                                                self.MODULE_LIST['OOP_podstawy'].Polynomial,
-                                                self.MODULE_LIST['OOP_podstawy'].HelloWorld,
-                                                self.MODULE_LIST['OOP_podstawy'].HelloWorldWithNothing,
-                                                self.MODULE_LIST['OOP_podstawy'].Vegetable)
+        bike, polynomial, hw_cls, not_hw_cls, vege = (
+            self.MODULE_LIST['OOP_podstawy'].Bicycle,
+            self.MODULE_LIST['OOP_podstawy'].Polynomial,
+            self.MODULE_LIST['OOP_podstawy'].HelloWorld,
+            self.MODULE_LIST['OOP_podstawy'].HelloWorldWithNothing,
+            self.MODULE_LIST['OOP_podstawy'].Vegetable
+        )
         ast_msg = '{} not implemented in {} class!'
         assert hasattr(hw_cls, "__init__"), ast_msg.format("__init__", hw_cls.__name__)
         for method in methods:
@@ -280,7 +336,9 @@ class StudentTests(unittest.TestCase):
         property_mass = self.MODULE_LIST['OOP_podstawy'].Vegetable.mass
         self.assertEquals(type(property_mass), property)
         self.assertEquals(type(property_color), property)
-        assert 'coefficients' not in [x[0] for x in inspect.classify_class_attrs(self.MODULE_LIST['OOP_podstawy'].Polynomial)]
+        assert 'coefficients' not in [
+            x[0] for x in inspect.classify_class_attrs(self.MODULE_LIST['OOP_podstawy'].Polynomial)
+        ]
 
     @Module('OOP_podstawy')
     def test_property_mention(self):
@@ -297,6 +355,34 @@ class StudentTests(unittest.TestCase):
             varname = matches[0][i]
             for property_name in matches[1][i]:
                 self.assertEquals(varname, property_name)
+
+    @Module('OOP_dziedziczenie_i_wiecej')
+    def test_inheritace_classes(self):
+        self.assertHasClass('Vegetable', ['Plant'])
+        self.assertHasClass('Plant')
+        self.assertHasClass('T34', ['Tank'])
+        self.assertHasClass('Tank', ['Battleunit', 'Vehicle'])
+
+    @Module('OOP_dziedziczenie_i_wiecej')
+    def test_diamond_conflict(self):
+        classlist = [
+            self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].T34,
+            self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].Vehicle,
+            self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].Tank,
+            self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].Battleunit
+        ]
+        sampletank = self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].Tank()
+        print(sampletank.move)
+        for cls in classlist:
+            assert hasattr(cls, 'move')
+
+    @Module('generatory_i_iteratory')
+    def test_basic_generators(self):
+        generators = ['generator1',
+                      'text_generator',
+                      'multiple_yield_generator']
+        for func_name in generators:
+            self.assertHasFunction(function_name=func_name)
 
 
 if __name__ == '__main__':
