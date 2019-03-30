@@ -1,7 +1,7 @@
 # python_course_materials_with_Travis [![Build Status](https://travis-ci.org/Neuroszima/python_course_materials_with_Travis.png?branch=master)](https://travis-ci.org/Neuroszima/python_course_materials_with_Travis)
 
 A materials for basic courses in Python, a summary of all you need to know about the language, as well a summary of what i have learned from various  basics, as well some concepts 
-consists for now of 8 basic modules, which will be filled with content (5/8 filled for now):
+consists for now of 8 basic modules, which will be filled with content (6/8 filled/partially-filled for now):
 
 ## basics: 
   how to write simple scripts and use a few builtins functions, as well as basic program flow operations (if-else statement, for loop)
@@ -9,11 +9,11 @@ consists for now of 8 basic modules, which will be filled with content (5/8 fill
 
 ## variables:
   something about variables and variable types, also more about builtins functions and 
-  ### current status: looking again, need more tests, and a bit more content
+  ### current status: satisfying for now
   
 ## functions:
   basic usage and creation of functions, including import of someones work
-  ### current status: looking again, need more tests, and more content
+  ### current status: satisfying for now
   
 ## OOP_basics:
   writing classes, mostly simple ones
