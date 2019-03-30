@@ -29,11 +29,9 @@ class Bicycle:
 
     Możnaby zadać pytanie czym wogóle jest klasa?
 
-    Klasa jest kostrukcją, którą tworzymy by opisać pewną grupę obiektów,
+    Klasa jest kostrukcją, którą tworzymy by opisać pewną grupę obiektów, Dobrym przykładem prostej klasy jest rower
 
-    dobrym przykładem prostej klasy jest rower
-
-    pojęcie klasy pozwala sformułować podstawowe cechy danej rzeczy - mówimy na nie OBIEKTY - oraz to jaką interakcję
+    pojęcie klasy pozwala sformułować podstawowe cechy danej rzeczy - mówimy na nie ``OBIEKTY`` - oraz to jaką interakcję
     ze światem zewnętrznym one przedstawiają
 
     Jakie więc cechy ma rower? No cóz jest to jednocześnie trudne i proste do zdefiniowania
@@ -54,8 +52,12 @@ class Bicycle:
 
         posiada metalowy rdzeń/rusztowanie, spajające te elementy w szególny sposób, zwany "ramą"
 
-    jak widać jest to już bardziej ukonkretyzowany opis czegoś, a nie poprostu zwykłe słowo "obiekt", i opis ten zgadza
-    się z faktycznym opisem roweru
+    jak widać jest to już bardziej ukonkretyzowany opis czegoś, a nie poprostu zwykłe "obiekt" albo "rzecz";
+    "rzeczą" możemy nazwać wiele obiektów wielu różnych klas.
+
+    Zazwyczaj pierwsze opisy nie są za bardzo szczegółowe, moglibyśmy się rozwodzić nad tym jaką fakturę mają opony,
+    jaki dokładnie mechanizm decyduje o zwiększaniu prędkości roweru, ale na jeszcze dokładniejszy opis pracy roweru
+    przyjdzie później, zostawiamy to co wymyśliliśmy, jeżeli ogólny opis zgadza się z faktycznym opisem roweru
 
     pytania o to jak wygląda dany obiekt trzeba zadać sobie zawsze, gdyż determinuje to jak ten obiekt wygląda
 
@@ -106,6 +108,8 @@ class Bicycle:
 
             szerokość opon
 
+            nazwa producenta
+
         przerabiając te dane moja fabryka wypluwa mi rower, z którym mogę następnie zrobić co tylko chcę
 
         w miarę jak nasza "fabryka" zaczyna pracę, może rzucić się w oczy pewna koncepcja - zmienna `"SELF"`
@@ -133,6 +137,7 @@ class Bicycle:
         :param type: typ roweru (np. góral)
         :param gears: ilość przerzutek
         :param wheel_width: szerokość opon
+        :param company: nazwa producenta
         """
         self.company = company
         self.color = color
@@ -178,10 +183,6 @@ class HelloWorld:
         print("Hello world from class")
 
 
-c = HelloWorld()
-d = HelloWorld()
-
-print(type(c), type(d))
 
 
 class Polynomial(object):
@@ -383,6 +384,9 @@ class Vegetable:
 
 
 if __name__ == '__main__':
+    c = HelloWorld()
+    d = HelloWorld()
+    print(type(c), type(d))
     bike = Bicycle("blue", "mountain", 6)
     print(bike)
     print(bike.color)

@@ -9,7 +9,7 @@ class SimpleTest(TestCase):
     MODULES_TO_IMPORT = [
         'podstawy',
         'zmienne',
-        'OOP_metody_magiczne_i_dziedziczenie'
+        'OOP_dziedziczenie_i_wiecej'
     ]
 
     MODULE_CODE = None
@@ -33,8 +33,8 @@ class SimpleTest(TestCase):
 
     def assertHasClass(self, cls_name, inheritances: list=None):
         match = re.finditer(r'class (?P<classname>[\w]+)(?P<inherited>\((?:[\w]+, )*[\w]+\))?:\n', self.MODULE_CODE)
-        # print(string)
         match_list = {k: v for k, v in [(x.group('classname'), x.group('inherited')) for x in match]}
+        print(match_list)
         if inheritances is not None:
             for classname in inheritances:
                 self.assertIsNotNone(re.search(classname, match_list[cls_name]),
@@ -96,7 +96,7 @@ class SimpleTest(TestCase):
         withAs_statement_regex = r'with open\([\'\"][\w\.]+[\'\"], [\'\"]([axrw])[\'\"]\) as [\w]+:'
         self.assertHasString(withAs_statement_regex, ['x', 'r', 'a', 'w'])
 
-    @codeExtractor('OOP_metody_magiczne_i_dziedziczenie')
+    @codeExtractor('OOP_dziedziczenie_i_wiecej')
     def test_named_group_regex(self):
         # language=regexp
         cls_regex = r'class (?P<classname>[\w]+)(?P<inherited>\((?:[\w]+, )*[\w]+\))?:\n'
@@ -107,10 +107,9 @@ class SimpleTest(TestCase):
             print(match.group('classname'))
             print(match.group('inherited'))
 
-    @codeExtractor('OOP_metody_magiczne_i_dziedziczenie')
+    @codeExtractor('OOP_dziedziczenie_i_wiecej')
     def test_inheritace_classes(self):
-        self.assertHasClass('Vegetable', ['Plant'])
-        super()
+        self.assertHasClass('Vegetable2', ['Plant'])
         # self.assertHasClass('Plant')
         # self.assertHasClass('T34', ['Tank'])
         # self.assertHasClass('Tank', ['Battleunit', 'Vehicle'])

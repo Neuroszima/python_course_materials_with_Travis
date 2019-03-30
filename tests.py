@@ -25,7 +25,8 @@ class StudentTests(unittest.TestCase):
     """
 
     MODULES_TO_LOAD = ["db_interaction", "OOP_dziedziczenie_i_wiecej", "podstawy",
-                       "OOP_podstawy", "dekoratory", "zmienne", "funkcje"]
+                       "OOP_podstawy", "dekoratory", "zmienne", "funkcje",
+                       "generatory_i_iteratory"]
 
     MODULE_CODE = None
 
@@ -320,22 +321,22 @@ class StudentTests(unittest.TestCase):
     def test_bicycle(self):
         bike = self.MODULE_LIST['OOP_podstawy'].Bicycle('blue', 'mountain', gears=5, wheel_width=2,
                                                         company="BMI hardcore burners")
-        self.assertEquals(bike.color, 'blue')
+        self.assertEqual(bike.color, 'blue')
 
     @Module('OOP_podstawy')
     def test_polynomial(self):
         polynomial = self.MODULE_LIST['OOP_podstawy'].Polynomial(1, 2, 3)
-        self.assertEquals("1 + 2x^1 + 3x^2", str(polynomial))
+        self.assertEqual("1 + 2x^1 + 3x^2", str(polynomial))
 
     @Module('OOP_podstawy')
     def test_property(self):
         vegetable = self.MODULE_LIST['OOP_podstawy'].Vegetable(40, 'blue')
-        self.assertEquals(vegetable.color, 'blue')
-        self.assertEquals(vegetable.mass, 40)
+        self.assertEqual(vegetable.color, 'blue')
+        self.assertEqual(vegetable.mass, 40)
         property_color = self.MODULE_LIST['OOP_podstawy'].Vegetable.color
         property_mass = self.MODULE_LIST['OOP_podstawy'].Vegetable.mass
-        self.assertEquals(type(property_mass), property)
-        self.assertEquals(type(property_color), property)
+        self.assertEqual(type(property_mass), property)
+        self.assertEqual(type(property_color), property)
         assert 'coefficients' not in [
             x[0] for x in inspect.classify_class_attrs(self.MODULE_LIST['OOP_podstawy'].Polynomial)
         ]
@@ -358,7 +359,8 @@ class StudentTests(unittest.TestCase):
 
     @Module('OOP_dziedziczenie_i_wiecej')
     def test_inheritace_classes(self):
-        self.assertHasClass('Vegetable', ['Plant'])
+        self.assertHasClass('Vegetable2', ['Plant'])
+        self.assertHasClass('Apple', ['Plant'])
         self.assertHasClass('Plant')
         self.assertHasClass('T34', ['Tank'])
         self.assertHasClass('Tank', ['Battleunit', 'Vehicle'])
@@ -379,8 +381,7 @@ class StudentTests(unittest.TestCase):
     @Module('generatory_i_iteratory')
     def test_basic_generators(self):
         generators = ['generator1',
-                      'text_generator',
-                      'multiple_yield_generator']
+                      'multiple_yield_generator',]
         for func_name in generators:
             self.assertHasFunction(function_name=func_name)
 

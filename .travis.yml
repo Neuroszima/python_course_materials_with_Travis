@@ -1,9 +1,10 @@
 language: python
 
 python:
-  - 3.6
+  - '3.6'
 
 script:
   - echo "hello world"
   - pip freeze
   - python3 tests.py
+  - python3 module_extractor_test.py

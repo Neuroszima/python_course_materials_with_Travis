@@ -1,5 +1,3 @@
-
-
 """
 pierwsze kroki w zmiennych
 
@@ -43,6 +41,21 @@ if __name__ == '__main__':
     s = "5"
     b = True
     f = .0
+
+    '''
+    lub też korzystając z wbudowanych funkcji:
+    '''
+
+    i2 = int('234')
+    s2 = str(450)
+    # w obu przypadkach powyżej, zajdzie konwersja typu
+    b2 = bool(2)
+    f2 = float(1)
+
+    print(f2)
+    print(b2)
+    print(s2)
+    print(i2)
 
     '''
     możemy sprawdzać typ zmiennej stosując funkcję "type" albo "isinstance"
@@ -223,7 +236,7 @@ if __name__ == '__main__':
     '''
     można też utworzyć listę korzystając z wbudowanej funkcji
     '''
-
+    empty_list = list()
     list_1 = list((1, 2, 3, 4, 5))
 
     '''
@@ -362,6 +375,15 @@ if __name__ == '__main__':
     '''
 
     generator = (i*2 for i in range(20))
+
+    '''
+    oraz jak zawsze możemy skorzystać z wbudowanej funkcji, by stworzyć tuplę, np. przerabiając już utworzoną 
+    listę na tuplę, albo poprostu utworzyć pustą, choc tak naprawdę nie ma to sensu, gdyż tupli nie można modyfikować
+    '''
+
+    empty_tup = tuple()
+    tup_from_list = tuple([1, 2, 3])
+    print(empty_tup, tup_from_list)
 
     '''
     o generatorach powiemy sobie później, jak narazie powiedzmy sobie teraz o słownikach, słowniki również zapisują 
