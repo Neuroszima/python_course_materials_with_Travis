@@ -473,6 +473,99 @@ class T34(Tank):
         Vehicle.move(self)  # here we programatically choose what implementation of move() we need from inherited class
 
 
+from OOP_podstawy import Polynomial
+
+
+class ComparablePolynomial(Polynomial):
+    """
+    Ok, teraz coś lżejszego, ale mogącego rzucić nieco światła na to jak niektóre metody magiczne działają w Pythonie
+
+    Wiedząc co nieco o tym, jak Python jest zbudowany, można wysnuć wniosek, że skoro został napisany w C, można również
+    - podobnie jak w C - przeładować różne operatory i metody
+
+    o ile przeładowanie metod nie jest w prost oczywiste, przeładowanie operatorów, np. dodawania jest zdecydowanie
+    prostsze. Mieliśmy tego przykład w klasie ``Polynomial``, gdzie zadeklarowaliśmy metodę __add__, tak naprawdę
+    nadpisując ją z metod klasy ``object``.
+
+    I tak właściwie dla większości operatorów istnieje metoda modelu danych, która umożliwia w łatwy sposób
+    zaimplementowanie przeładowania takiego operatora, pełna lista jest dostępna w dokumentacji Pythona
+
+    link: https://docs.python.org/3/reference/datamodel.html#special-method-names
+
+    tutaj postaramy się napisać 3 z nich:
+        czy są równe? -> implementyjemy __eq__ (od `equal`)
+        czy jeden jest większy od drugiego? -> implementujemy __gt__ (od `greater than`)
+        czy jest mniejszy? -> implementujemy __lt__ (od `lower than`)
+
+    widać że nie jest to takie trudne, a czasem bywa nawet intuicyjne
+
+    jest to podstawa bardziej zaawansowanego podejścia do programowania w Pythonie; jeżeli jest jakaś prosta składnie,
+    albo wbudowana funkcja która robi coś z naszym obiektem, prawdopodobnie istnieje metoda __ której implementacja
+    umożliwi proste i intuicyjne korzystanie z obieków danej klasy/modelu.
+
+    nadpiszmy sobie metody już obecne w klasie Polynomial, ale napiszmy poprostu odwołanie do metod wbudowanych w tę
+    klasę, rozszerzymy dzięki temu funkcjonalność naszego ``Wielomianu`` o możliwości porównania wielomianów ze sobą,
+    nie zmieniając podstawowych funkcjonalności
+    """
+    def __init__(self, *args):
+        super().__init__(*args)
+
+    def __repr__(self):
+        return super().__repr__()
+
+    def __str__(self):
+        return super().__str__()
+
+    def __len__(self):
+        """
+        tutaj używamy super w sposób jaki był używany w starszych wersjach Pythona, nie jest to wymagane, a rezultat
+        jest identyczny jak w przypadku użycia zwykłego `super()`
+        :return: miara wielkości wielomianu
+        """
+        return super(ComparablePolynomial, self).__len__()
+
+    def __add__(self, other):
+        return super().__add__(other)
+
+    def __eq__(self, other):
+        """
+        chcemy porównać czy dwa wielomiany są takie same, czyli czy każdy współczynnik przy kolejnych elementach jest
+        równy w przypadku obu wielomianów
+
+        :param other: inny wielomian który chcemy porównać
+        :return: True jeżeli są takie same, inaczej False
+        """
+        if len(self) != len(other):
+            return False
+        checks = [True for x, y in zip(self.coefficients, other.coefficients) if x == y]
+        return True if len(checks) == len(self) else False
+
+    def __gt__(self, other):
+        """
+        jeżeli nasz wielomian jest "większy niż" ten drugi, zwróć True, jak nie to False
+
+        Wielkością wielomianu może być np. wartość ostatniego argumentu, przy wielomianach tej samej długości, lub sama
+        długość jeżeli jeden jest ma więcej współczynników od drugiego
+
+        :param other: inny wielomian który chcemy porównać
+        :return: True jeżeli jest większy, inaczej False
+        """
+        if len(self) > len(other):
+            return True
+        return True if self.coefficients[-1] > other.coefficients[-1] else False
+
+    def __lt__(self, other):
+        """
+        to samo co w __gt__ ale "mniejszy niż", logika pozostaje ta sama
+
+        :param other: inny wielomian który chcemy porównać
+        :return: True jeżeli jest mniejszy, inaczej False
+        """
+        if len(self) < len(other):
+            return True
+        return True if self.coefficients[-1] < other.coefficients[-1] else False
+
+
 if __name__ == '__main__':
     vege1 = Vegetable('blue', 30)
     vege2 = Vegetable2('green', 52.4)
@@ -503,3 +596,15 @@ if __name__ == '__main__':
     print(True)
     assert isinstance(t34, MovingObject)
     print(True)
+
+    c_poly1 = ComparablePolynomial(1, 2, 3, 4)
+    c_poly2 = ComparablePolynomial(4, 5)
+    c_poly3 = ComparablePolynomial(1, 2, 3, 4)
+    c_poly4 = ComparablePolynomial(1, 2, 3, 6)
+
+    print(c_poly1 == c_poly3)
+    print(c_poly1 > c_poly2)
+    print(c_poly1 < c_poly4)
+    print(c_poly2 < c_poly3)
+    print(c_poly4 > c_poly3)
+    print(c_poly1 < c_poly3)
