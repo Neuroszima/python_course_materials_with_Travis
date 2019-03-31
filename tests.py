@@ -34,7 +34,7 @@ class StudentTests(unittest.TestCase):
 
     class Module:
         """
-        a `Module` class serves as a decorator, that wraps a specific test to set what code of which module
+        a ``Module`` class serves as a decorator, that wraps a specific test to set what code of which module
         should be checked during the test
 
         """
@@ -53,14 +53,8 @@ class StudentTests(unittest.TestCase):
                 print("test: ", function.__name__)
                 StudentTests.MODULE_CODE = inspect.getsource(StudentTests.MODULE_LIST[self.md_name])
                 result = function(*args, **kwargs)
-                # if self.md_name == "zmienne":
-                #     if system() == 'Windows':
-                #         os.system('rem new_file.txt new_file2.txt')
-                #     else:
-                #         os.system('rm new_file.txt new_file2.txt')
                 return result
 
-            # print("in : __call__")
             return function_wrapper
 
     def load_modules(self, module_names):
@@ -363,7 +357,7 @@ class StudentTests(unittest.TestCase):
         self.assertHasClass('Apple', ['Plant'])
         self.assertHasClass('Plant')
         self.assertHasClass('T34', ['Tank'])
-        self.assertHasClass('Tank', ['Battleunit', 'Vehicle'])
+        self.assertHasClass('Tank', ['BattleUnit', 'Vehicle'])
 
     @Module('OOP_dziedziczenie_i_wiecej')
     def test_diamond_conflict(self):
@@ -371,12 +365,24 @@ class StudentTests(unittest.TestCase):
             self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].T34,
             self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].Vehicle,
             self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].Tank,
-            self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].Battleunit
+            self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].BattleUnit,
+            self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].MovingObject
         ]
-        sampletank = self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].Tank()
-        print(sampletank.move)
+        sampletank = self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].T34()
+        # print(sampletank.move)
         for cls in classlist:
-            assert hasattr(cls, 'move')
+            if type(sampletank) != cls:
+                assert sampletank.move.__code__ != cls.move.__code__, \
+                    f'{sampletank.__class__} has not overriden move() method from a superclass!' \
+                    f' It is the same as in {cls}'
+            assert isinstance(sampletank, cls)
+
+    @Module('OOP_dziedziczenie_i_wiecej')
+    def test_bases_implemented(self):
+        vege1 = self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].Vegetable2('blue', 59)
+        plant = self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].Plant
+        bases = vege1.__bases__()
+        assert plant in bases
 
     @Module('generatory_i_iteratory')
     def test_basic_generators(self):

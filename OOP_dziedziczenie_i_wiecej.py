@@ -262,10 +262,11 @@ class MovingObject(ABC):
 
     przydatny jest tutaj moduł ``ABC`` - `abstract base class`
 
-    to co możemy zrobić to jedyie dziedziczyć to tej klasie, ale obiektów tej klasy bezpośrednio nie możemy powoływać
+    to co możemy, po dzeiedziczeniu po klasie ABC, zrobić to jedyie dziedziczyć dalej po tej klasie, ale obiektów klasy
+    ``MovingObject`` bezpośrednio nie możemy powoływać
 
-    klasy abstrakcyjne są wykorzystywane do tworzenia tzw. ``interfejsów``, czyli klas, które mają zalążki metod, ale
-    te metody wymagają uprzedniej ``implementacji`` - wypełnienia ich kodem potrzebnym w naszym problemie
+    klasy abstrakcyjne są wykorzystywane (m. in.) do tworzenia tzw. ``interfejsów``, czyli klas, które mają zalążki
+    metod, ale te metody wymagają uprzedniej ``implementacji`` - wypełnienia ich kodem potrzebnym w naszym problemie
 
     dlaczego wogóle takie podejście jest potrzebne? Po co mamy tworzyć klasy abstrakcyjne, jeżeli możemy od razu tworzyć
     coś, co działa, ma pewien wymiar użytkowy? Czemu nie możemy/chcemy po prostu skorzystać z tzw. Duck-typingu?
@@ -278,7 +279,7 @@ class MovingObject(ABC):
         korzystanie z takiej klasy może wywołać błędy, albo niektóre metody mogą być użyte w sposób, jaki nie
         chcielibyśmy widzieć u użytkownika naszej biblioteki
 
-    jest to najsłabszy argument, ale przejdźmy dalej
+    jest to najsłabszy argument w moim mniemaniu, ale przejdźmy dalej
 
     2. UMOŻLIWIA TWORZENIE INTERFEJSÓW, ZWIĘKSZAJĄCYCH LOGIKĘ W NASZYM KODZIE, CZYNIĄC GO CZYTELNIEJSZYM:
         bardziej konkretny argument, tworząc taką klasę możemy zastrzec, że jest to tylko pewien logiczny zestaw metod
@@ -288,7 +289,7 @@ class MovingObject(ABC):
 
     będzie to pewnego rodzaju interfejs, który przewiduje, że obiekty dziedziczące po nim, jak podpowiada logika, będą
     w stanie się poruszać; może to być dowolny ruch, dlatego pozostawiamy - mówimy - implementację w kwestji
-    użwytkownika
+    użwytkownika naszej klasy
 
     taki interfejs może mieć np. metodę `move()`, oraz coś co zlicza pokonany dystans, jak np. `count_distance_total()`
     u nas będzie jedynie metoda `move()` dla prostoty
@@ -314,12 +315,16 @@ class MovingObject(ABC):
     dobrodziejstw Duck-typingu.
 
     Może wydawać się to trudne do przyswojenia, więc zostawię przydatne linki:
+        PEP 3119: https://www.python.org/dev/peps/pep-3119/
 
-    PEP 3119: https://www.python.org/dev/peps/pep-3119/
-    o module abc: https://docs.python.org/3/library/abc.html#module-abc
-    dlaczego warto kozystać z ABC: https://stackoverflow.com/questions/3570796/why-use-abstract-base-classes-in-python/3571946
-    Duck-typing - definicja: https://pl.wikipedia.org/wiki/Duck_typing
-    Podstawa programowania obiektowego - reguła SOLID: https://en.wikipedia.org/wiki/SOLID
+        o module abc: https://docs.python.org/3/library/abc.html#module-abc
+
+        dlaczego warto kozystać z ABC: https://stackoverflow.com/questions/3570796/why-use-abstract-base-classes-in-python/3571946
+
+        Duck-typing - definicja: https://pl.wikipedia.org/wiki/Duck_typing
+
+        Podstawa programowania obiektowego - reguła SOLID: https://en.wikipedia.org/wiki/SOLID
+
 
     """
     @abstractmethod
@@ -327,8 +332,54 @@ class MovingObject(ABC):
         pass
 
 
-class Battleunit(MovingObject):
+class BattleUnit(MovingObject):
+    """
+    Zadeklarujmy sobie jedną z pierwszych klas które dziedziczą po naszym interfejsie ``MovingObject``, niech to będzie
+    jednostka bojowa - ``BattleUnit``
+
+    jednostka bojowa, jak to jednostka bojowa, ma też metodę `attack()`, oprócz metody zadeklarowanej w MovingObject
+
+    jest to tak naprawdę już 2-gie dziedziczenie z kolei, wszystkie klasy dziedziczą po klasie ``object``, następnie
+    klasa ``ABC`` której użyliśmy to tworzenia MovingObject, dziedziczyła po wbudowanym ``object``, następnie
+    stworzyliśmy nasz MovingObject, a teraz BattleUnit który dziedziczy po MovingObject
+
+    a w skróce:
+        ``object -> ABC -> MovingObject -> BattleUnit``
+
+
+    takich dziedziczeń jedno po drugim może być wiele, np.:
+        Plant -> Tree -> AppleTree
+    """
+    def __init__(self):
+        """
+        Czy obiekt powstanie, nawet jeżeli nie zadeklarujemy właściwego konstruktora? Tak, użyty zostanie domyślny
+        konstruktor obiektu, nawet jeżeli nic nie zadeklarujemy tutaj
+        """
+        pass
+
     def move(self):
+        """
+        w tym miejscu wywołujemy metodę move() klasy BattleUnit
+
+        mimo, że wywołujemy `super()` by potem odwołać się do klasy nadrzędnej, to w klasie nadrzędnej metoda ma tylko
+        jedną instrukcję - pass, więc jest to raczej zbyteczne
+
+        nie zawsze tak musi być, często w metodzie nadrzędnej np. upewniamy się, że gdy dana metoda jest deklarowana w
+        jakiejś klasie, automatycznie dzięki temu stwierdzając, że obiekt po czymś dziedziczy
+
+        nie będziemy daleko szukać, przykład takiej implementacji znajduje się w module collections w podstawowej
+        bibliotece Pythona; jak zarzysz do tego modułu spójrz na klasę Container; po deklaracji metod __contains__ którą
+        możesz zadeklarować w jakiejkolwiek klasie, Python uzna natychmiastowo, że twoja klasa dziedziczy po klasie
+        Container, nawet jeżeli nie zadeklarowałeś jej w nawiasach przy dziedziczeniu - następuje przeładowanie
+        isinstance() oraz issubclass()
+
+        takie przeładowanie jest możliwe dzięki __subclasshook__, kolejnej metodzie d-under (sporo ich, ale jest to
+        zbyt zaawansowane zastosowanie żeby się tym jak narazie przejmować, później omówimy prostsze : ) )
+
+        link (2-ga odpowiedź): https://stackoverflow.com/questions/3570796/why-use-abstract-base-classes-in-python/3571946
+
+        :return: None
+        """
         print('changed position!')
         super().move()
 
@@ -337,22 +388,89 @@ class Battleunit(MovingObject):
 
 
 class Vehicle(MovingObject):
+    """
+    Kolejna klasa dziedzicząca po klasie abstrakcyjnej ``MovingObject``, ale tutaj jest inna implementacja
+    """
     def move(self):
         print('moved fast')
 
 
-class Tank(Battleunit, Vehicle):
+class Tank(BattleUnit, Vehicle):
+    """
+    No dobrze, ale co jeżeli chcialibyśmy pogodzić wiele interfejsów, np. jednostka która się porusza i strzela?
+
+    Nie ma problemu! Możemy dziedziczyć po wielu klasach jednocześnie, wystarczy wypisać je po przecinku w nawiasie w
+    deklaracji
+
+    No dobra, ale jest jeden problem:
+        Jak pogodzić interfesy które mają tą samą metodę/metody? Która ma być wykorzystana? czy wogóle jest to w jakiś
+        sposób regulowane?
+
+    Nie jest to nowy problem, nawet ma swoją nazwę, problem diamentowy
+
+    Problem diamentowy pojawia się wtedy gdy np. dwie klasy dziedziczące po tej samej klasie (u nas jest to BattleUnit),
+    implementują metodę zawartą w tej klasie na różny sposób, a następnie w programie istnieje klasa, która dziedziczy
+    po obydwojgu z nich. Następuje pytanie po której klasie powinno się dziedziczyć metodę? czy wogóle powinno? Co się
+    dzieje przy wywołaniu funkcji super()?
+
+    Zilustrujmy problem schematem:
+
+          O        klasa definiująca metodę `move()` (u nas MovingObject)
+        / |
+       /  |
+      /   |
+     /    |
+    O     O       klasy implementujące `move()` (u nas Vehicle oraz BattleUnit)
+    |    /
+    |   /
+    |  /
+    | /
+    O             klasa dziedzicząca po 2 klasach z metodą `move()` (u nas Tank)
+
+    Wiele języków różnie sobie z tym radziło, niektóre uniemożliwiały dziedziczenie po wielu klasach, by nie być na ten
+    problem wrażliwym (Java 7 i wcześniej, Java 8 -> ma już wielokrotne rozszeżenia), inne pozostawiały decyzję
+    programiście, po której klasie chce dziedziczyć daną metodę i którą implementację wybiera (np. C++)
+
+    Python ma na to odmienne spojrzenie, tak zwane MRO - Method Resolution Order
+
+    MRO jest mechanizmem pozwalającym na wybór metod z klas dziedziczących automatycznie, bez naszej ingerencji
+    Ścieżka dziedziczenia powstaje poprzez przegląd klas dziedzicznych, od najwyższej aż do klasy ``object``, z
+    wyróżnieniem kolejności dziedziczenia w nawiasach włącznie
+
+    Biorąc przykład z naszego czołgu, obie klasy mają zaimplementowaną metodę `move()`, ale dlatego że w deklaracji
+    dziedziczenia ``BattleUnit`` występuje jako pierwsze, to jej implementacja metody `move()` będzie wykonana, gdy
+    użyjemy funkcji `super()`
+    """
     def move(self):
         print('tank is moving!')
-        super(Vehicle).move()
+        super().move()  # will use a BattleUnit implementation o the move() method here, not Vehicle ones
 
     def attack(self):
+        """
+        nie musimy definiować metody `attack()` na nowo, ale znów chcemy mieć inne działanie niż w implementacji z
+        ``BattleUnit``
+        :return:
+        """
         print('dealt tremendous damage!')
 
 
 class T34(Tank):
+    """
+    No dobrze, ale co jeżeli chcemu użyć innej definicji, która była już zadeklarowana? Jak odwołać się do tego inaczej
+    niż wynika to z MRO?
+
+    musimy się w takim razie odwołać do tego, jak do metody klasowej, przekazując `siebie` jako referencję
+
+    przy innych metodach byłoby to ważne ze względu na to, że np. musielbyśmy mieć dostęp do pól wewnętrznych
+    określonego obiektu, na którym przeprowadzamy jakieś działania (np. obliczenia)
+
+    w naszym przypadku, jeżeli chcielibyśmy skorzystać z metody `move()` klasy ``Vehicle`` zamiast tej danej w MRO
+    (BattleUnit), wywołujemy nazwę klasy Vehicle, a potem metodę którą jesteśmy zainteresowani (tu `move()`) i
+    przekazujemy `"self"` jako argument (jak w zwyczajnej funkcji
+    """
     def move(self):
         print(f'{self.__class__} is moving!')
+        Vehicle.move(self)  # here we programatically choose what implementation of move() we need from inherited class
 
 
 if __name__ == '__main__':
@@ -365,3 +483,23 @@ if __name__ == '__main__':
     print(Vegetable2.__bases__)
     print(vege2.__bases__())
     print(plant1.__class__.__bases__)
+    try:
+        m_obj = MovingObject()  # Can't instantiate abstract class MovingObject with abstract methods move
+    except Exception as e:
+        print(e.__class__, e)
+    b_u = BattleUnit()
+    vh = Vehicle()
+    tank = Tank()
+    t34 = T34()
+    b_u.move()
+    vh.move()
+    tank.move()
+    t34.move()
+    tank.attack()
+    t34.attack()
+    assert isinstance(t34, T34)  # following assertions check wether t34 is object of said type; won't print True if not
+    print(True)
+    assert isinstance(t34, Tank)
+    print(True)
+    assert isinstance(t34, MovingObject)
+    print(True)

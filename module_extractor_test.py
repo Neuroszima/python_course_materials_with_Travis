@@ -114,6 +114,18 @@ class SimpleTest(TestCase):
         # self.assertHasClass('T34', ['Tank'])
         # self.assertHasClass('Tank', ['Battleunit', 'Vehicle'])
 
+    @codeExtractor('OOP_dziedziczenie_i_wiecej')
+    def test_module_code_equality(self):
+        # solution taken from: https://stackoverflow.com/questions/9436681/how-to-detect-method-overloading-in-subclasses-in-python
+        tank = self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].Tank
+        t34 = self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].T34
+        print(tank.move.__code__, '\n', t34.move.__code__)
+        if tank.move.__code__ != t34.move.__code__:
+            print('not eq')
+        else:
+            print('eq')
+        assert tank.move.__code__ != t34.move.__code__, 'code in both methods equal, did you forget to override method?'
+
 
 if __name__ == '__main__':
     main()
