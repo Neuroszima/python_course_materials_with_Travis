@@ -176,17 +176,81 @@ def itetools_repeat_iterator(element, nr_of_times):
 
 #  opis do dodania
 def generator1():
+    """
+    a gdzie w tym wszystkim są generatory???
+
+    Generator jest to również iterator, można by szczerze powiedzieć, że są nie rozróżnialne, jednak pod spodem jest
+    kilka ciekawych rzeczy które możnaby powiedzieć o generatorach
+
+    zazwyczaj mówi się o generatorach, że są to takie "funkcje, które zamiast return mają yield". I jest to prawda,
+    projektanci języka stwierdzili, że można za pomocą słowa kluczowego yield, ze zwykłaej funkcji która ma `return`,
+    nadać właściwości iteratora takiej funkcji umieszczając w niej yield
+
+    nie jest to jednak do końca iterator, fakt, z punktu widzenia iteratorów można do tego podejść w niemalże identyczny
+    sposób, znów definiować klasę, na nowo definiować metodę __next__, zamiast `return` dać `yield` i to jest wszystko,
+    a my pod względem zaprojektowania nie widzimy żadnej różnicy
+
+    generator jednak robi coś sprytniejszego - sam definiuje za nas metodę __next__
+
+    czym jest jednak to __next__? jest to (albo raczej, możemy to przybliżyć do) linia kodu po słowie kluczowym yield
+    które zostało wykonane. Wraz z linią kodu zostaje zapamiętany również stan obiektu, tak, byśµy mogli do niego
+    wrócić przy kolejnym wywołaniu
+
+    spójrzmy na poniższą funkcję, zgodnie z tym co tutaj napisałem, funkcja powinna przy pierwszym wykonaniu zwrócić 1,
+    a następnie wywołać wyjątek StopIteration, jak w iteratorze, bo 1 już zwróciliśmy, a dalej nic już nie ma
+
+    aby skorzystać z generatorowej funkcji, nie będziemy jej wywoływać od razu z (), najpierw przypiszmy ją do zmiennej,
+    by nie stracić bazowego stanu generatora który został utworzony przy uruchomieniu programu z tego modułu
+
+    :return: 1, dalej podnosi StopIteration
+    """
     yield 1
 
 
 # opis do dodania
 def multiple_yield_generator():
+    """
+    przez to że generatory przechowują swój stan w pamięci, możemy napisać kilka yield w jednej funkcji
+
+    generator zatrzyma swoje działanie na kolejnym, by wczytać go przy następnym wywołaniu funkcji next()
+
+    :return: wartośc w zależności od ilości next()
+    """
     yield 1
     yield 2
     yield 'end of file...'
 
 
 def infinite_yield_generator():
+    """
+    dzięki temu że funkcja "pamięta" gdzie skończyła, możemy zdefiniować sobie generatory, które mają nieskończone
+    pętle
+
+    dalczego generatory warto stosować?
+
+    cóż jedna rzecz jest szczególnie ważna a jest nią to że:
+        generatory pamiętają swój stan, listy zajmują dużo pamięci
+
+    jest to najważniejsza zaleta generatorów, poniżej mamy sekwencję liczb od jednego do nieskończoności! chyba nie
+    masz takiej dobrej pamięci żeby wszystkie liczby pomieścić, nie?
+
+    stosując generator możemy znacznie zredukować jej zużycie na gorszych maszynach, poza tym generatory dziedziczą po
+    iteratorach jeszcze jedną rzecz - są leniwe
+
+    yield zwraca wartość jednocześnie zapamiętując swój stan. Możemy w między czasie wykonać całe mnóstwo rzeczy po
+    zwróceniu wartości, a nie musimy zrzucać wszystkiego jednocześnie do listy, jak byśmy to zrobili tradycyjnie. Takie
+    podejście umożliwia lepsze wykorzystanie czasu procesora, gdyż gdy czekamy na wynik innego polecenia, zazwyczaj
+    tradycyjnie nie jest możliwe zatrzymanie programu od tak. Z generatorem zapisując stan możemy przenieść moc gdzie
+    indziej, czekając na dane z innych miejsc, np. z internetu. Trzymając w pamięci staj 1 obiektu, nie trzymamy też
+    100000000 rekordów historii naszego programu.
+
+    Dlatego że generator umożliwia podejście z lepszym wykorzystaniem zajętości procesora jest często mylony z szybszym
+    wykonaniem danego wątku, co nie jest prawdą. Obliczenie zawsze musi się odbyć. Wczytywany jest co prawda stan
+    generatora, a gdy stan ten leży w pamięci o niskim czasie dostępu (np. L1) faktycznie moglibyśmy zwrócić uwagę na
+    poprawę czasu wykonania, w stosunku do 10000000 wartości w listach. Nie zawsze jednak jest to prawda.
+
+    :return: tyle n ile mania woli
+    """
     n = 1
     while True:
         yield n
@@ -231,3 +295,28 @@ if __name__ == '__main__':
 
     for i in reversible_iter:
         print('reversed reversible', i)
+
+    new_gen = generator1  # here we copy a function that returns generators
+    print("")
+    print(new_gen)
+    print(new_gen())
+    # all those below will return "1" since they call a function saved in new_gen for new instance of the
+    # generator each time, and then invoke next() on themselves
+    print(next(new_gen()))
+    print(next(new_gen()))
+    print(next(new_gen()))
+    print("")
+    gen = new_gen()  # here we save an actual generator to memory
+    print(next(gen))  # should return "1"
+    # print(next(gen))  # now this raises "StopIteration"
+    multi_gen = multiple_yield_generator()
+    print("")
+    print(next(multi_gen))  # 1
+    print(next(multi_gen))  # 2
+    print(next(multi_gen))  # 'eof'
+    infi_gen = infinite_yield_generator()
+    for i in range(10):  # will print 1 to 10, we don't want an infinite loops
+        print(next(infi_gen))
+
+    # and did it save state?
+    print(next(infi_gen))
