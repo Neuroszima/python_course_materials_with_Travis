@@ -65,7 +65,7 @@ class MyIter(object):
 
         :return: następny element
         """
-        while self.current_val <= self.max_point:
+        while self.current_val < self.max_point:
             current = self.current_val
             self.current_val += 1
             return current
@@ -80,7 +80,7 @@ class MyReversedIter(object):
     nasze rozwiązanie jest jednak zbyt scustomizowane, by tego rozwiązania na razie użyć. Stwórzmy na ten czas klasę,
     która będzie iterowała z góry do dołu, z zadeklarowaniem wartości
 
-    metoda ta umożliwia poruszanie się iteratorowi do tyłu
+    metoda __next__ będzie tutaj umożliwiać poruszanie się iteratorowi od wartości najmniejszej do największej
     """
     def __init__(self, max_point, current_val=None):
         self.min_point = 0
@@ -94,10 +94,10 @@ class MyReversedIter(object):
         return self
 
     def __next__(self):
-        while self.current_val >= self.min_point:
-            current_val = self.current_val
+        while self.current_val > self.min_point:
             self.current_val -= 1
-            return current_val
+            # current_val = self.current_val
+            return self.current_val
         else:
             raise StopIteration('no more values you want to return')
 
@@ -156,7 +156,7 @@ def iter_iterator(mylist):
     powstanie iteratora z naszej listy jest banalne. Warto zapamiętać jednak fakt, że klasowe iteratory można łatwiej
     dostosować do naszych potrzeb, np. dodając przydatne metody do klasy
 
-    :param list: lista do przerobienia na iterator
+    :param mylist: lista do przerobienia na iterator
     :return: iterator z listy
     """
     return iter(mylist)
@@ -258,7 +258,7 @@ def infinite_yield_generator():
 
 
 if __name__ == '__main__':
-    print(isinstance(list, typing.Iterator))  # True!
+    print(isinstance(list, typing.Iterator))  # False!
 
     new_iter = MyIter(10)
     print(isinstance(new_iter, typing.Iterator))  # True!
@@ -283,7 +283,7 @@ if __name__ == '__main__':
         print('nothing more')
 
     reversible_iter = MyReversibleIter(10)
-    print(isinstance(reversible_iter, typing.Iterator))  # False!
+    print(isinstance(reversible_iter, typing.Iterator))  # True!
 
     for i in reversible_iter:
         print("reversible", i, " ", reversible_iter)
