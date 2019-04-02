@@ -1,4 +1,4 @@
-# python_course_materials_with_Travis [![Build Status](https://travis-ci.org/Neuroszima/python_course_materials_with_Travis.png?branch=master)](https://travis-ci.org/Neuroszima/python_course_materials_with_Travis)
+# python_course_materials_with_Travis [![Build Status](https://travis-ci.org/Neuroszima/python_course_materials_with_Travis.png?branch=master)](https://travis-ci.org/Neuroszima/python_course_materials_with_Travis) [![BCH compliance](https://bettercodehub.com/edge/badge/Neuroszima/python_course_materials_with_Travis?branch=master)](https://bettercodehub.com/)
 
 A materials for basic courses in Python, a summary of all you need to know about the language, as well a summary of what i have learned from various  basics, as well some concepts 
 consists for now of 8 basic modules, which will be filled with content (6/8 filled/partially-filled for now):
