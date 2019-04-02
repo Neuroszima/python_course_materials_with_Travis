@@ -3,7 +3,7 @@ import inspect
 import unittest
 import importlib
 import re
-import dis
+import random
 
 
 class StudentTests(unittest.TestCase):
@@ -427,6 +427,45 @@ class StudentTests(unittest.TestCase):
                       'infinite_yield_generator',]
         for func_name in generators:
             self.assertHasFunction(function_name=func_name)
+
+    @Module('generatory_i_iteratory')
+    def test_basic_iterator(self):
+        from typing import Iterator
+        md = self.MODULE_LIST['generatory_i_iteratory']
+        cls_objects = [md.MyIter(10),
+                   md.MyReversedIter(10),
+                   md.MyReversibleIter(10)]
+        iter_methods = ['__iter__', '__init__', '__next__']
+        for cls in cls_objects:
+            assert isinstance(cls, Iterator)
+            for mtd in iter_methods:
+                assert mtd in dir(cls)
+        assert hasattr(cls_objects[2], '__reversed__')
+
+    @Module('generatory_i_iteratory')
+    def test_iterators_working(self):
+        md = self.MODULE_LIST['generatory_i_iteratory']
+        rnd = random.randint(3, 10)
+        forward_iter = md.MyIter(rnd)
+        back_iter = md.MyReversedIter(rnd)
+        back_forth_iter = md.MyReversibleIter(rnd)
+        fwd_result = [x for x in range(rnd)]
+        bck_result = [x for x in reversed(range(rnd))]
+        bck_fwd_result = [] + fwd_result + bck_result
+        print(fwd_result)
+        res1 = list(forward_iter)
+        print(res1)
+        assert res1 == fwd_result
+
+        print(bck_result)
+        res2 = list(back_iter)
+        print(res2)
+        assert res2 == bck_result
+
+        print(bck_fwd_result)
+        res3 = [] + list(back_forth_iter) + list(reversed(back_forth_iter))
+        print(res3)
+        assert res3 == bck_fwd_result
 
 
 if __name__ == '__main__':
