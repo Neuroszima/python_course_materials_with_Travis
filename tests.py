@@ -3,7 +3,7 @@ import inspect
 import unittest
 import importlib
 import re
-import dis
+import random
 
 
 class StudentTests(unittest.TestCase):
@@ -95,7 +95,7 @@ class StudentTests(unittest.TestCase):
                 assert found, f"{case} not mentioned in python materials"
                 found = False
 
-    def assertHasClass(self, cls_name, inheritances: list=None):
+    def assertHasClass(self, cls_name: str, inheritances: list=None):
         match = re.finditer(r'class (?P<classname>[\w]+)(?P<inherited>\((?:[\w]+, )*[\w]+\))?:\n', self.MODULE_CODE)
         # print(string)
         match_list = {k: v for k, v in
@@ -353,11 +353,20 @@ class StudentTests(unittest.TestCase):
 
     @Module('OOP_dziedziczenie_i_wiecej')
     def test_inheritace_classes(self):
+        self.assertHasClass('Plant')
         self.assertHasClass('Vegetable2', ['Plant'])
         self.assertHasClass('Apple', ['Plant'])
-        self.assertHasClass('Plant')
         self.assertHasClass('T34', ['Tank'])
         self.assertHasClass('Tank', ['BattleUnit', 'Vehicle'])
+
+    @Module('OOP_dziedziczenie_i_wiecej')
+    def test_abstract_class(self):
+        # language=regexp
+        self.assertHasClass('MovingObject', ['ABC'])
+        # language=regexp
+        self.assertHasString('@abstractmethod\n[ ]+def ([\w]+)\(self\):', ['move'])
+        self.assertRaises(TypeError, self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].MovingObject)
+        # ^ here callable means INSTANCE OF A FUNCTION, NOT FUNCTION CALL ITSELF
 
     @Module('OOP_dziedziczenie_i_wiecej')
     def test_diamond_conflict(self):
@@ -372,6 +381,7 @@ class StudentTests(unittest.TestCase):
         # print(sampletank.move)
         for cls in classlist:
             if type(sampletank) != cls:
+                # piece of code to check if method is overriden from superclass or is left as-is
                 assert sampletank.move.__code__ != cls.move.__code__, \
                     f'{sampletank.__class__} has not overriden move() method from a superclass!' \
                     f' It is the same as in {cls}'
@@ -384,12 +394,78 @@ class StudentTests(unittest.TestCase):
         bases = vege1.__bases__()
         assert plant in bases
 
+    @Module('OOP_dziedziczenie_i_wiecej')
+    def test_compareable_polynomial(self):
+        poly_basic = self.MODULE_LIST['OOP_podstawy'].Polynomial(1, 3, 5, 8)
+        poly_comp = self.MODULE_LIST['OOP_dziedziczenie_i_wiecej'].ComparablePolynomial(2, 4, 7)
+        bases = poly_comp.__class__.__bases__
+        assert poly_basic.__class__ in bases
+        methodlist = ['__str__', '__len__', '__lt__', '__gt__', '__eq__', '__repr__', '__add__']
+        for method in methodlist:
+            # method check
+            assert hasattr(poly_comp, method)
+            # next is method overriding check, similar logic as in test_diamond_conflict
+            # what is different, is that we check if the method is implemented in base class first
+            # if the method is not defined in base class at all, it means it is a new addition
+            # we can check it by invoking type(getattr(class, magic_method_name))
+            # normally we wouldn't make this check, but for every magic method - the implementation exists
+            # in the form of a so called "method-wrapper" class
+            # if we don't check against it, the usual __code__ check will fail, as there is no __code__ object
+            # under the hood when method is invoked, but the method itself exist
+            #
+            # some light can be cast when we take a look at the following link:
+            # https://stackoverflow.com/questions/10401935/python-method-wrapper-type
+            if str(type(getattr(poly_basic, method))) != '<class \'method-wrapper\'>':
+                assert getattr(poly_comp, method).__code__ != getattr(poly_basic, method).__code__, \
+                    f'{poly_comp.__class__} has not overriden {method} method from a superclass!\n' \
+                    f' It is the same as in {poly_basic.__class__}'
+
     @Module('generatory_i_iteratory')
     def test_basic_generators(self):
         generators = ['generator1',
-                      'multiple_yield_generator',]
+                      'multiple_yield_generator',
+                      'infinite_yield_generator',]
         for func_name in generators:
             self.assertHasFunction(function_name=func_name)
+
+    @Module('generatory_i_iteratory')
+    def test_basic_iterator(self):
+        from typing import Iterator
+        md = self.MODULE_LIST['generatory_i_iteratory']
+        cls_objects = [md.MyIter(10),
+                   md.MyReversedIter(10),
+                   md.MyReversibleIter(10)]
+        iter_methods = ['__iter__', '__init__', '__next__']
+        for cls in cls_objects:
+            assert isinstance(cls, Iterator)
+            for mtd in iter_methods:
+                assert mtd in dir(cls)
+        assert hasattr(cls_objects[2], '__reversed__')
+
+    @Module('generatory_i_iteratory')
+    def test_iterators_working(self):
+        md = self.MODULE_LIST['generatory_i_iteratory']
+        rnd = random.randint(3, 10)
+        forward_iter = md.MyIter(rnd)
+        back_iter = md.MyReversedIter(rnd)
+        back_forth_iter = md.MyReversibleIter(rnd)
+        fwd_result = [x for x in range(rnd)]
+        bck_result = [x for x in reversed(range(rnd))]
+        bck_fwd_result = [] + fwd_result + bck_result
+        print(fwd_result)
+        res1 = list(forward_iter)
+        print(res1)
+        assert res1 == fwd_result
+
+        print(bck_result)
+        res2 = list(back_iter)
+        print(res2)
+        assert res2 == bck_result
+
+        print(bck_fwd_result)
+        res3 = [] + list(back_forth_iter) + list(reversed(back_forth_iter))
+        print(res3)
+        assert res3 == bck_fwd_result
 
 
 if __name__ == '__main__':
