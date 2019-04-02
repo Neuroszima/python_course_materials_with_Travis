@@ -1,0 +1,3 @@
+[submodule "travis-ci-discord-webhook"]
+	path = travis-ci-discord-webhook
+	url = https://github.com/DiscordHooks/travis-ci-discord-webhook.git

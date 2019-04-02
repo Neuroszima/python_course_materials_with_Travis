@@ -8,3 +8,12 @@ script:
   - pip freeze
   - python3 tests.py
   - python3 module_extractor_test.py
+
+after_success:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./travis-ci-discord-webhook/send.sh success $WEBHOOK_URL
+after_failure:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./travis-ci-discord-webhook/send.sh failure $WEBHOOK_URL
