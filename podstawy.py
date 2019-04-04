@@ -13,12 +13,24 @@ if __name__ == '__main__':
     print("coś innego")
 
     '''
-    każdy program ma wbudowane funkcje, tu np. możemy użyć sum(elementy)
+    inny typ umieszczania łańcuchu znaków w funkcji: pojedyńcze apostrofy zamiast cudzysłowu
+    można dzięki temu wykorzystać cudzysłów przy wyświetlaniu a apostrof sygnalizując żeby tekst był wyświetlony jako 
+    string
     '''
+    print('coś innego')
+    print('"coś innego"')
 
+    '''
+    problematyczne znaki można też przerobić na tzw. znak ucieczki - umieścić przed nim \ by został odczytany dosłownie
+    '''
+    print("\"hello world\"")
+
+    '''
+    możemy też przekazać do print() proste działanie matematyczne, a on zwróci nam wynik
+    '''
     print(2 + 2)
 
-    print(3.40958028)
+    print(2.5)
 
     from math import pi
 

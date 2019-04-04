@@ -124,6 +124,20 @@ class StudentTests(unittest.TestCase):
         self.assertIsNotNone(self.MODULE_CODE)
 
     @Module('podstawy')
+    def test_print(self):
+        # language=regexp
+        self.assertHasString(r"print\(([\w\'\"\\\s+.]+)\)\n", [
+            "\"hello world\"",
+            "\"coś innego\"",
+            "\'coś innego\'",
+            "\'\"coś innego\"\'",
+            "\"\\\"hello world\\\"\"",
+            "2 + 2",
+            "2.5",
+            "pi",
+        ])
+
+    @Module('podstawy')
     def test_basics_equations(self):
         # language=regexp
         equations = r"([\w]+) = ([\w\. ]+) ([\+\-\*\/]{1,2}) ([\w\. ]+)"
@@ -209,7 +223,6 @@ class StudentTests(unittest.TestCase):
                     if isinstance(ast.literal_eval(element), var_type): match = True
                     if match: break
             assert match, f"{var_type} not show as usable in lists!"
-
 
     @Module('zmienne')
     def test_dicts(self):
@@ -433,8 +446,8 @@ class StudentTests(unittest.TestCase):
         from typing import Iterator
         md = self.MODULE_LIST['generatory_i_iteratory']
         cls_objects = [md.MyIter(10),
-                   md.MyReversedIter(10),
-                   md.MyReversibleIter(10)]
+                       md.MyReversedIter(10),
+                       md.MyReversibleIter(10)]
         iter_methods = ['__iter__', '__init__', '__next__']
         for cls in cls_objects:
             assert isinstance(cls, Iterator)
