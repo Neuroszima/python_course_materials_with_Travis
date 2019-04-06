@@ -31,7 +31,6 @@ def fetch_data(server_address='www.server.com/api', data_type='int32'):
     sleep(0.5)
     print('done!')
     data = ['data']
-
     return data
 
 
@@ -221,8 +220,6 @@ def time_it(function):
     gdzie () na końcu natychmiastowo wywołuje funkcję która zwróciliśmy dekoratorem!!!
 
     A co jak mamy argumenty? poprzednio mieliśmy tylko czyste wywołanie funkcji które zwracało jakiś wynik.
-
-
     """
     def wrapper(*args, **kwargs):
         start = time()
@@ -385,3 +382,12 @@ if __name__ == '__main__':
     reult4_deco = subs_decorated(4001, 234.2309)
     reult5_deco = fetch_data_decorated()
     reult6_deco = fetch_data_decorated(server_adderss='www.goo.pl/api', data_type='float64')
+
+    '''
+    oraz to co pisaliśmy w time_it:
+    '''
+    result_deco_with_call = time_it(print_helloworld)()
+    print(result_deco_with_call)
+    result_deco_with_args = time_it(add)(1, 4)
+    print(result_deco_with_args)
+
