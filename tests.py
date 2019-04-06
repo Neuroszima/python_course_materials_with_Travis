@@ -1,9 +1,12 @@
 import ast
 import inspect
+import io
 import unittest
 import importlib
 import re
 import random
+from pprint import pprint
+from contextlib import redirect_stdout
 
 
 class StudentTests(unittest.TestCase):
@@ -57,6 +60,10 @@ class StudentTests(unittest.TestCase):
 
             return function_wrapper
 
+    @staticmethod
+    def tester():
+        return 2 + 3
+
     def load_modules(self, module_names):
         try:
             log = open('log.txt', "x")
@@ -75,7 +82,7 @@ class StudentTests(unittest.TestCase):
     def assertHasFunction(self, function_name):
         matched = re.findall(r"def ([\w]+)\(", self.MODULE_CODE)
         # print(matched)
-        assert function_name in matched
+        assert function_name in matched, f'{function_name} not mentioned in materials'
         print(function_name, " found")
 
     def assertHasString(self, regex, cases: list=None):
@@ -349,7 +356,7 @@ class StudentTests(unittest.TestCase):
         for i in range(0, len(matches[0])-1):
             varname = matches[0][i]
             for property_name in matches[1][i]:
-                self.assertEquals(varname, property_name)
+                self.assertEqual(varname, property_name)
 
     @Module('OOP_dziedziczenie_i_wiecej')
     def test_inheritace_classes(self):
@@ -466,6 +473,106 @@ class StudentTests(unittest.TestCase):
         res3 = [] + list(back_forth_iter) + list(reversed(back_forth_iter))
         print(res3)
         assert res3 == bck_fwd_result
+
+    @Module('dekoratory')
+    def test_tesed_functions(self):
+        funcs = [
+            'fetch_data',
+            'subs',
+            'add'
+        ]
+        for func in funcs:
+            self.assertHasFunction(func)
+
+    @Module('dekoratory')
+    def test_function_with_timing_behavior(self):
+        funcs = [
+            'fetch_data_timed',
+            'subs_timed',
+            'add_timed'
+        ]
+        # language=regexp
+        time_it_logic = [
+            'start = time\(\)',
+            'end = time\(\)',
+            'time_taken = end - start',
+            'print\(time_taken\)'
+        ]
+        for func in funcs:
+            self.assertHasFunction(func)
+            func_code = inspect.getsource(getattr(self.MODULE_LIST['dekoratory'], func))
+            for string in time_it_logic:
+                self.assertIsNotNone(re.search(pattern=string, string=func_code))
+
+    @Module('dekoratory')
+    def test_print_name_function(self):
+
+        self.assertHasFunction('print_function_name')
+        func = getattr(self.MODULE_LIST['dekoratory'], 'print_function_name')
+        func_code = inspect.getsource(func)
+        self.assertIsNotNone(re.search(r'print\(function\.__name__\)', func_code))
+        out = io.StringIO()
+        with redirect_stdout(out):
+            result = func(self.tester)
+        out_result = out.getvalue()
+        assert 'tester' in out_result
+
+    @Module('dekoratory')
+    def test_print_name_decorator(self):
+        self.assertHasFunction('print_name')
+        func = getattr(self.MODULE_LIST['dekoratory'], 'print_name')
+        func_code = inspect.getsource(func)
+        self.assertIsNotNone(re.search(r'print\(function\.__name__\)', func_code))
+        out = io.StringIO()
+        with redirect_stdout(out):
+            result = func(self.tester)()  # decorated staticmethod tester with func and called
+        out_result = out.getvalue()
+        assert 'tester' in out_result
+        assert func(self.tester()).__name__ in re.findall(r'def ([\w]+)\([\w\s*]*\)', func_code)
+
+    @Module('dekoratory')
+    def test_time_it_decorator(self):
+        self.assertHasFunction('time_it')
+        # language=regexp
+        time_it_logic = [
+            r'start = time\(\)',
+            r'end = time\(\)',
+            r'print\(\'\\n\', f\"The function \{function\.__name__} took \{end - start} to execute\"\)',
+        ]
+        func = getattr(self.MODULE_LIST['dekoratory'], 'time_it')
+        func_code = inspect.getsource(func)
+        for logic in time_it_logic:
+            self.assertIsNotNone(re.search(logic, func_code))
+        out = io.StringIO()
+        with redirect_stdout(out):
+            result = func(self.tester)()  # decorated staticmethod tester with func and called
+        out_result = out.getvalue()
+        assert 'tester' in out_result
+        assert func(self.tester()).__name__ in re.findall(r'def ([\w]+)\([\w\s=\'\"\/,.*]+\):\n', func_code)
+
+    @Module('dekoratory')
+    def test_time_it_decorates(self):
+        # language=regexp
+        self.assertHasString(
+            r'@time_it\n[ ]*def ([\w]+)\([\w\s=\'\"\/,.]+\):\n', [
+                'add_decorated',
+                'fetch_data_decorated',
+                'subs_decorated'
+            ])
+
+    @Module('dekoratory')
+    def test_decorator_essence(self):
+        # language=regexp
+        explainations = [
+            r'def ([\w]+)\(function\)',  # function that accepts functions as input
+            r'@([\w]+)\n[ ]*def ([\w]+)\([\w\s*]*\)',  # "@" as a symbol of decorating
+            r'result_deco_with_call = ([\w]+)\(([\w]+)\)\(\)',
+            # ^ making a call just after the function call that has function as output -> decor(func)()
+            r'result_deco_with_args = ([\w]+)\(([\w]+)\)\(([\w\s\'\",.]+)\)',
+            # ^ like one line higher but now we make an immediate call with arguments
+        ]
+        for expression in explainations:
+            self.assertHasString(expression)
 
 
 if __name__ == '__main__':
