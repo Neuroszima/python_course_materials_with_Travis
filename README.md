@@ -26,11 +26,11 @@ consists for now of 8 basic modules, which will be filled with content (7/8 fill
   
 ## db_interaction
   database management, with PostgreSQL database and psycopg-binary lib.
-  ### current status: not implemented yet
+  ### current status: faker implemented, contents and tests not
   
 ## decorators
   a module about decorators, with explaination about what, why and how to make them.
-  ### current status: satisfying for now, tests not implemented
+  ### current status: satisfying for now
   
 ## generators_and_iterators
   how to create your own iterating class/object; writing generators
